@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PassLocker.Database;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+
+using PassLocker.Services;
+using PassLocker.Database;
 
 namespace PassLocker.Controllers
 {
@@ -12,9 +14,11 @@ namespace PassLocker.Controllers
     public class UserController : ControllerBase
     {
         private PassLockerDbContext db;
-        public UserController(PassLockerDbContext injectContext)
+        private readonly IProtector protector;
+        public UserController(PassLockerDbContext injectContext, IProtector protector)
         {
             this.db = injectContext;
+            this.protector = protector;
         }
         
         // GET: api/user
@@ -27,9 +31,9 @@ namespace PassLocker.Controllers
 
         // GET: api/user/{id}
         [HttpGet("{id:int}")]
-        [ProducesResponseType(200, Type = typeof(UserDTO))]
+        [ProducesResponseType(200, Type = typeof(UserViewDTO))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<UserDTO>> GetUser(int id)
+        public async Task<ActionResult<UserViewDTO>> GetUser(int id)
         {
             User user = await db.Users.FindAsync(id);
             if (user == null)
@@ -41,7 +45,7 @@ namespace PassLocker.Controllers
 
         // POST: api/user/create-user
         [HttpPost("create-user")]
-        [ProducesResponseType(201, Type = typeof(UserDTO))]
+        [ProducesResponseType(201, Type = typeof(UserViewDTO))]
         [ProducesResponseType(404)]
         public async Task<IActionResult> CreateUser([FromBody] User user)
         {
@@ -54,8 +58,13 @@ namespace PassLocker.Controllers
                 return BadRequest(ModelState);
             }
 
-            EntityEntry<User> added = await db.Users.AddAsync(user);
+            user = protector.CreateHashedPassword(user);
+
+            User new_user = UserToDatabaseDTO(user);
+            
+            EntityEntry<User> added = await db.Users.AddAsync(new_user);
             int affected = await db.SaveChangesAsync();
+            Console.WriteLine(affected);
             if (affected == 1)
             {
                 return CreatedAtRoute(
@@ -84,7 +93,11 @@ namespace PassLocker.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Users.Update(user);
+            user = protector.CreateHashedPassword(user);
+
+            User new_user = UserToDatabaseDTO(user);
+
+            db.Users.Update(new_user);
             int affected = await db.SaveChangesAsync();
             if (affected == 1)
             {
@@ -119,16 +132,32 @@ namespace PassLocker.Controllers
             }
         }
 
-        private static UserDTO UserToDTO(User user) =>
-            new UserDTO
+        private static UserViewDTO UserToDTO(User user) =>
+            new UserViewDTO
             {
                 UserId = user.UserId,
                 UserName = user.UserName,
-                Confirmed = user.Confirmed,
+                Confirmed = user.UserConfirmed,
                 Name = user.Name,
                 Gender = user.Gender,
                 MemberSince = user.MemberSince
             };
 
+        private static User UserToDatabaseDTO(User user) =>
+            new User
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                UserEmail = user.UserEmail,
+                UserPasswordSalt = user.UserPasswordSalt,
+                UserPasswordHash = user.UserPasswordHash,
+                UserSecretAnswerHash = user.UserSecretAnswerHash,
+                UserConfirmed = user.UserConfirmed,
+                Name = user.Name,
+                Location = user.Location,
+                Gender = user.Gender,
+                MemberSince = user.MemberSince,
+                StoredPasswords = user.StoredPasswords
+            };
     }
 }

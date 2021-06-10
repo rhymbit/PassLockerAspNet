@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PassLocker.Database;
+using PassLocker.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace PassLocker
 {
@@ -29,6 +31,9 @@ namespace PassLocker
         {
             services.AddDbContext<PassLockerDbContext>(options =>
                 options.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"]));
+
+            // Register Password Hashing Service
+            services.AddScoped<IProtector, Protector>();
 
             services.AddControllers()
                 .AddXmlDataContractSerializerFormatters()

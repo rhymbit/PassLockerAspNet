@@ -23,14 +23,20 @@ namespace PassLocker.Database
         [Column("user_email")]
         public string UserEmail { get; set; }
 
+        [NotMapped]
+        public string UserPassword { get; set; }
+
+        [Column("password_salt")]
+        public string UserPasswordSalt { get; set; }
+
         [Column("user_password_hash")]
         public string UserPasswordHash { get; set; }
 
-        [Column("secret_answer_hash")]
-        public string SecretAnswerHash { get; set; }
+        [Column("user_secret_answer_hash")]
+        public string UserSecretAnswerHash { get; set; }
 
-        [Column("confirmed")]
-        public bool Confirmed { get; set; }
+        [Column("user_confirmed")]
+        public bool UserConfirmed { get; set; }
 
         // Some Basic Information
         [Column("name")]

@@ -31,7 +31,7 @@ namespace PassLocker.Database
                 .HasMaxLength(30);
 
             modelBuilder.Entity<User>()
-                .Property(user => user.Confirmed)
+                .Property(user => user.UserConfirmed)
                 .HasDefaultValue(false);
 
         }
