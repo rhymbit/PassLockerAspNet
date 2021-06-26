@@ -40,6 +40,8 @@ namespace PassLocker
                 .AddXmlSerializerFormatters()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
+            services.AddCors();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PassLocker", Version = "v1" });
@@ -59,6 +61,13 @@ namespace PassLocker
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(configurePolicy: options =>
+            {
+                options.WithMethods("GET", "POST", "PUT", "DELETE");
+                options.WithOrigins(
+                    "http://localhost:3000");
+            });
 
             app.UseAuthorization();
 

@@ -28,6 +28,7 @@ namespace PassLocker.Controllers
         {
             return BadRequest("Inaccessible url");
         }
+        
 
         // GET: api/user/{id}
         [HttpGet("{id:int}")]
