@@ -1,4 +1,5 @@
 using System;
+using System.Net.Security;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PassLocker.Database;
 using PassLocker.Services;
+using PassLocker.Services.GoogleLogin;
+using PassLocker.Services.UserDatabase;
 
 namespace PassLocker
 {
@@ -34,6 +37,12 @@ namespace PassLocker
 
             // Register Password Hashing Service
             services.AddScoped<IProtector, Protector>();
+            
+            // Register custom Google Authentication service
+            services.AddScoped<IGoogleLogin, GoogleLogin>();
+
+            // Register custom UserDatabase service
+            services.AddScoped<IUserDatabase, UserDatabase>();
 
             services.AddControllers()
                 .AddXmlDataContractSerializerFormatters()

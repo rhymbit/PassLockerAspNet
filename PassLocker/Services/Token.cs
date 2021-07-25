@@ -4,6 +4,6 @@ namespace PassLocker.Controllers
 {
     public class Token
     {
-        public string UserToken { get; set; }
+        public string googleToken { get; set; }
     }
 }
