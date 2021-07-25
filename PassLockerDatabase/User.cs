@@ -42,16 +42,16 @@ namespace PassLocker.Database
         [Column("name")]
         [Required]
         [MaxLength(30)]
-        public String Name { get; set; }
+        public string Name { get; set; }
 
         [Column("location")]
         [Required]
-        public String Location { get; set; }
+        public string Location { get; set; }
 
         [Column("gender")]
         [MaxLength(6)]
         [Required]
-        public String Gender { get; set; }
+        public string Gender { get; set; }
 
         [Column("member_since")]
         public DateTime MemberSince { get; set; }
