@@ -1,6 +1,4 @@
-﻿using System.Dynamic;
-
-namespace PassLocker.Controllers
+﻿namespace PassLocker.Services.Token
 {
     public class Token
     {

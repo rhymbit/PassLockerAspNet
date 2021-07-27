@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassLocker", "PassLocker.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PassLockerDatabase", "..\PassLockerDatabase\PassLockerDatabase.csproj", "{4D460B16-3EC6-4407-801F-8ACD758B8C65}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingConsole", "..\TestingConsole\TestingConsole.csproj", "{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4D460B16-3EC6-4407-801F-8ACD758B8C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D460B16-3EC6-4407-801F-8ACD758B8C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D460B16-3EC6-4407-801F-8ACD758B8C65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

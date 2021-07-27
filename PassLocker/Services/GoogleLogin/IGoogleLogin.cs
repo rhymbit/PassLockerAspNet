@@ -6,6 +6,6 @@ namespace PassLocker.Services.GoogleLogin
 {
     public interface IGoogleLogin
     {
-        public Task<GoogleJsonWebSignature.Payload> VerifyTokenAndGetPayload(Token token);
+        public Task<GoogleJsonWebSignature.Payload> VerifyTokenAndGetPayload(Token.Token token);
     }
 }

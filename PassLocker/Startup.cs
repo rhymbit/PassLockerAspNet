@@ -1,10 +1,5 @@
-using System;
-using System.Net.Security;
-using Google.Apis.Auth.OAuth2;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,8 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PassLocker.Database;
-using PassLocker.Services;
 using PassLocker.Services.GoogleLogin;
+using PassLocker.Services.Protector;
 using PassLocker.Services.UserDatabase;
 
 namespace PassLocker

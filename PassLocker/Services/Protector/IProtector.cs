@@ -1,7 +1,6 @@
-﻿using System;
-using PassLocker.Database;
+﻿using PassLocker.Database;
 
-namespace PassLocker.Services
+namespace PassLocker.Services.Protector
 {
     public interface IProtector
     {

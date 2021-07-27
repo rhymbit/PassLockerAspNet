@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PassLocker.Database;
 using PassLocker.Services;
+using PassLocker.Services.Protector;
 
 namespace PassLocker.Controllers
 {
@@ -65,10 +66,7 @@ namespace PassLocker.Controllers
             Console.WriteLine(affected);
             if (affected == 1)
             {
-                return CreatedAtRoute(
-                    routeName: nameof(GetUser),
-                    routeValues: new { id = user.UserId },
-                    value: UserToDTO(user));
+                return Created(nameof(GetUser), UserToDTO(user));
             }
             else
             {
@@ -134,6 +132,7 @@ namespace PassLocker.Controllers
             new UserViewDTO
             {
                 UserId = user.UserId,
+                UserEmail = user.UserEmail,
                 UserName = user.UserName,
                 Confirmed = user.UserConfirmed,
                 Name = user.Name,
