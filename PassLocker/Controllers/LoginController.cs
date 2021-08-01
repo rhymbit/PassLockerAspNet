@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 using PassLocker.Database;
@@ -26,13 +27,13 @@ namespace PassLocker.Controllers
                 await _googleLogin.VerifyTokenAndGetPayload(googleAuthToken);
             
             // Malicious User or Not an actual google user
-            if (payload.Equals(null)) return BadRequest("Google user not verified.");
+            if (payload == null) return BadRequest("Google user not verified.");
             
             // Get user from the database or get a new user
             UserViewDTO googleUser = await _database.GetGoogleUser(payload.Email);
             googleUser.Name = payload.Name;
             googleUser.UserEmail = payload.Email;
-            
+
             // Send basic user data
             // for a new user,
             // you have to create a 'password', 'secret answer' field at the front-end

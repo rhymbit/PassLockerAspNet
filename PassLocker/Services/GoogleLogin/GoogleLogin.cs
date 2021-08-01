@@ -25,6 +25,9 @@ namespace PassLocker.Services.GoogleLogin
         {
             GoogleJsonWebSignature.Payload payload = null;
             
+            // testing out stuff with a mock payload
+            return TestingPayload.GetTestingPayload();
+            
             try
             {
                 payload = await GoogleJsonWebSignature.ValidateAsync(token.googleToken);
@@ -32,12 +35,14 @@ namespace PassLocker.Services.GoogleLogin
                 if (!payload.Audience.Equals(Configs["GoogleAuth:ClientId"]))
                 {
                     Console.WriteLine("PassLocker.Services.GoogleLogin - Not a valid user.");
+                    payload = null;
                 }
                 
                 if (!payload.Issuer.Equals(GoogleIssuer[0]) &&
                     !payload.Issuer.Equals(GoogleIssuer[1]))
                 {
                     Console.WriteLine("PassLocker.Services.GoogleLogin - Not a valid user");
+                    payload = null;
                 }
                 // ****** Code to check token expiration *******
                 // DateTime now = DateTime.Now.ToUniversalTime();
@@ -52,9 +57,9 @@ namespace PassLocker.Services.GoogleLogin
             catch (InvalidJwtException exp)
             {
                 Console.WriteLine("PassLocker.Services.GoogleLogin - Invalid token from Google User.");
+                payload = null;
             }
-            
-            // if all checks pass
+
             return payload;
         }
     }
