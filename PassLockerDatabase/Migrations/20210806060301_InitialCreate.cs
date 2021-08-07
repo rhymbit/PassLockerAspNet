@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PassLockerDatabase.Migrations
 {
-    public partial class IntialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,8 +17,8 @@ namespace PassLockerDatabase.Migrations
                     user_email = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     password_salt = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     user_password_hash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    secret_answer_hash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    confirmed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    user_secret_answer_hash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    user_confirmed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     location = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     gender = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),

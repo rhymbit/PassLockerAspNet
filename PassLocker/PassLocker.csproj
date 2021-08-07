@@ -16,7 +16,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<ProjectReference Include="..\PassLockerDatabase\PassLockerDatabase.csproj"></ProjectReference>
+		<ProjectReference Include="..\PassLockerDatabase\PassLockerDatabase.csproj" />
 	</ItemGroup>
 
 </Project>

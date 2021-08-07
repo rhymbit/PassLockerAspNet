@@ -10,8 +10,8 @@ using PassLocker.Database;
 namespace PassLockerDatabase.Migrations
 {
     [DbContext(typeof(PassLockerDbContext))]
-    [Migration("20210610150134_ThirdCreate")]
-    partial class ThirdCreate
+    [Migration("20210806060301_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

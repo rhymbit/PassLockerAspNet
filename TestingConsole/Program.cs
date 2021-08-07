@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using PassLocker.Database;
 
 namespace TestingConsole
 {
@@ -6,7 +10,11 @@ namespace TestingConsole
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(DateTime.Today);
+            using (var db = new PassLockerDbContext())
+            {
+                User firstUser = db.Users.First();
+                Console.WriteLine(firstUser.UserEmail);
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ namespace PassLocker
     {
         // policy name for react app
         private const string MyAllowSpecificOrigins = "myReactApp";
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -28,9 +30,11 @@ namespace PassLocker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<PassLockerDbContext>(options =>
-                options.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"]));
+                options.UseSqlServer(
+                    Environment.GetEnvironmentVariable("DB_SQL_SERVER_EXPRESS") ?? 
+                    BackupConnectionString()));
 
-            // Register Password Hashing Service
+            // Register custom Password Hashing Service
             services.AddScoped<IProtector, Protector>();
             
             // Register custom Google Authentication service
@@ -86,6 +90,21 @@ namespace PassLocker
                 endpoints.MapControllers();
                 //endpoints.MapFallbackToFile("index.html");
             });
+        }
+        
+        /// <summary>
+        /// This method is for development and testing purpose only.
+        /// Remove this method in production
+        /// </summary>
+        /// <returns>Sql connection string for the current OS.</returns>
+        private string BackupConnectionString()
+        {
+            if (Environment.OSVersion.ToString().Contains("Unix", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Data Source=accelarator;Initial Catalog=tempdb;User id=sa;Password=Prateek333#;";
+            }
+
+            return @"Server=PRATEEKPC\SQLEXPRESS;Database=PassLocker;Trusted_Connection=True;";
         }
     }
 }

@@ -6,9 +6,6 @@ namespace PassLocker.Database
 {
     public class PassLockerDbContext : DbContext
     {
-        private readonly string RemoveFromProduction =
-            @"Server=PRATEEKPC\SQLEXPRESS;Database=PassLocker;Trusted_Connection=True;";
-
         public PassLockerDbContext() { }
         public PassLockerDbContext(DbContextOptions<PassLockerDbContext> options)
                 : base(options)
@@ -20,8 +17,8 @@ namespace PassLocker.Database
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlServer(
-                Environment.GetEnvironmentVariable("SQL_SERVER_EXPRESS_CONN_STRING") ??
-                RemoveFromProduction);
+                Environment.GetEnvironmentVariable("DB_SQL_SERVER_EXPRESS") ??
+                BackupConnectionString());
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,6 +37,21 @@ namespace PassLocker.Database
                 .Property(user => user.UserConfirmed)
                 .HasDefaultValue(false);
 
+        }
+        
+        /// <summary>
+        /// This method is for development and testing purpose only.
+        /// Remove this method in production
+        /// </summary>
+        /// <returns>Sql connection string for the current OS.</returns>
+        private string BackupConnectionString()
+        {
+            if (Environment.OSVersion.ToString().Contains("Unix", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Data Source=accelarator;Initial Catalog=tempdb;User id=sa;Password=Prateek333#;";
+            }
+
+            return @"Server=PRATEEKPC\SQLEXPRESS;Database=PassLocker;Trusted_Connection=True;";
         }
     }
 }
