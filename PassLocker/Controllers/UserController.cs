@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using PassLocker.Database;
+using PassLockerDatabase;
 using PassLocker.Services;
 using PassLocker.Services.Protector;
+using PassLockerDatabase.Google;
 
 namespace PassLocker.Controllers
 {
@@ -39,14 +41,14 @@ namespace PassLocker.Controllers
             {
                 return NotFound("User does not exists");
             }
-            return UserToDTO(user);
+            return UserToDto(user);
         }
 
         // POST: api/user/create-user
         [HttpPost("create-user")]
-        [ProducesResponseType(201, Type = typeof(UserViewDTO))]
+        [ProducesResponseType(201, Type = typeof(BasicUserProfile))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> CreateUser([FromBody] User user)
+        public async Task<IActionResult> CreateUser([FromBody] BasicUserProfile user)
         {
             if (user == null)
             {
@@ -57,20 +59,19 @@ namespace PassLocker.Controllers
                 return BadRequest(ModelState);
             }
 
-            user = protector.CreateHashedPassword(user);
+            // user = protector.CreateHashedPassword(user);
 
-            User new_user = UserToDatabaseDTO(user);
+            var newUser = GoogleUserToDatabaseDto(user);
             
-            EntityEntry<User> added = await db.Users.AddAsync(new_user);
+            EntityEntry<User> added = await db.Users.AddAsync(newUser);
             int affected = await db.SaveChangesAsync();
-            Console.WriteLine(affected);
             if (affected == 1)
             {
-                return Created(nameof(GetUser), UserToDTO(user));
+                return Created(nameof(GetUser), UserToDto(newUser));
             }
             else
             {
-                return Problem("Some problem at the server");
+                return Problem("Some problem at the server. Cannot create new user.");
             }
         }
 
@@ -91,7 +92,7 @@ namespace PassLocker.Controllers
 
             user = protector.CreateHashedPassword(user);
 
-            User new_user = UserToDatabaseDTO(user);
+            User new_user = UserToDatabaseDto(user);
 
             db.Users.Update(new_user);
             int affected = await db.SaveChangesAsync();
@@ -99,8 +100,7 @@ namespace PassLocker.Controllers
             {
                 return NoContent();
             }
-            else
-            {
+            else {
                 return NotFound("User could not be found in database");
             }
         }
@@ -128,7 +128,7 @@ namespace PassLocker.Controllers
             }
         }
 
-        private static UserViewDTO UserToDTO(User user) =>
+        private static UserViewDTO UserToDto(User user) =>
             new UserViewDTO
             {
                 UserId = user.UserId,
@@ -139,8 +139,8 @@ namespace PassLocker.Controllers
                 Gender = user.Gender,
                 MemberSince = user.MemberSince
             };
-
-        private static User UserToDatabaseDTO(User user) =>
+        
+        private static User UserToDatabaseDto(User user) =>
             new User
             {
                 UserId = user.UserId,
@@ -155,6 +155,22 @@ namespace PassLocker.Controllers
                 Gender = user.Gender,
                 MemberSince = user.MemberSince,
                 StoredPasswords = user.StoredPasswords
+            };
+
+        private static User GoogleUserToDatabaseDto(BasicUserProfile user) =>
+            new User
+            {
+                UserName = user.Username,
+                UserEmail = user.Email,
+                UserPasswordSalt = "randomPasswordSalt",
+                UserPasswordHash = "randomPasswordHash",
+                UserSecretAnswerHash = "randomUserSecretAnswerHash",
+                UserConfirmed = true,
+                Name = user.Name,
+                Location = user.Location,
+                Gender = user.Gender,
+                MemberSince = new DateTime().Date,
+                StoredPasswords = new List<UserPasswords>()
             };
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
 
-namespace PassLocker.Database
+namespace PassLockerDatabase
 {
     [Table("users")]
     public class User

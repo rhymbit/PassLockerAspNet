@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using PassLocker.Database;
+using PassLockerDatabase;
 
 namespace PassLocker.Services.Protector
 {

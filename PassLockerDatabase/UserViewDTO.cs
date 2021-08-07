@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PassLocker.Database
+namespace PassLockerDatabase
 {
     public class UserViewDTO
     {

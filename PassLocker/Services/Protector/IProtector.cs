@@ -1,4 +1,4 @@
-﻿using PassLocker.Database;
+﻿using PassLockerDatabase;
 
 namespace PassLocker.Services.Protector
 {

@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace PassLocker.Database
+namespace PassLockerDatabase
 {
     public class PassLockerDbContext : DbContext
     {

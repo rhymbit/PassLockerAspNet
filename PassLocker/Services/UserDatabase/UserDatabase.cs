@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using PassLocker.Database;
+using PassLockerDatabase;
 
 namespace PassLocker.Services.UserDatabase
 {

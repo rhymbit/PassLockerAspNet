@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PassLocker.Database
+namespace PassLockerDatabase
 {
     [Table("user_passwords")]
     public class UserPasswords
