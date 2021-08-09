@@ -30,7 +30,7 @@ namespace PassLocker.Services.GoogleLogin
             
             try
             {
-                payload = await GoogleJsonWebSignature.ValidateAsync(token.googleToken);
+                payload = await GoogleJsonWebSignature.ValidateAsync(token.GoogleToken);
 
                 if (!payload.Audience.Equals(Configs["GoogleAuth:ClientId"]))
                 {

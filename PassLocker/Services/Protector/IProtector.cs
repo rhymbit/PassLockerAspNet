@@ -4,7 +4,7 @@ namespace PassLocker.Services.Protector
 {
     public interface IProtector
     {
-        public User CreateHashedPassword(User user);
+        public string[] CreateHashedStringAndSalt(string stringToHash);
         public bool CheckPassword(User user);
     }
 }

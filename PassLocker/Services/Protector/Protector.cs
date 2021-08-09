@@ -8,7 +8,7 @@ namespace PassLocker.Services.Protector
 {
     public class Protector : IProtector
     {
-        public User CreateHashedPassword(User user)
+        public string[] CreateHashedStringAndSalt(string stringToHash)
         {
             // generate random salt
             var saltBytes = new byte[16];
@@ -18,10 +18,9 @@ namespace PassLocker.Services.Protector
             }
 
             // generate the salted-hashed password
-            var saltedHashedPassword = SaltAndHashPassword(user.UserPassword, saltBytes);
-            user.UserPasswordHash = saltedHashedPassword;
-            user.UserPasswordSalt = Convert.ToBase64String(saltBytes);
-            return user;
+            var saltedHashedString = SaltAndHashPassword(stringToHash, saltBytes);
+            var salt = Convert.ToBase64String(saltBytes);
+            return new[] { saltedHashedString, salt };
         }
 
         public bool CheckPassword(User user)

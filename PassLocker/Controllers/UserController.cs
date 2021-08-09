@@ -10,14 +10,15 @@ using PassLockerDatabase.Google;
 
 namespace PassLocker.Controllers
 {
+    [ApiController]
     [Route("api/[Controller]")]
     public class UserController : ControllerBase
     {
         private PassLockerDbContext db;
         private readonly IProtector protector;
-        public UserController(PassLockerDbContext injectContext, IProtector protector)
+        public UserController(PassLockerDbContext dbContext, IProtector protector)
         {
-            this.db = injectContext;
+            this.db = dbContext;
             this.protector = protector;
         }
         
@@ -89,8 +90,8 @@ namespace PassLocker.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            user = protector.CreateHashedPassword(user);
+            
+            // protector.CreateHashedStringAndSalt(user.UserPassword);
 
             User new_user = UserToDatabaseDto(user);
 

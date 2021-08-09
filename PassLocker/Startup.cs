@@ -45,7 +45,7 @@ namespace PassLocker
             services.AddScoped<IUserDatabase, UserDatabase>();
             
             // Register custom token service
-            services.AddScoped<TokenService>();
+            services.AddScoped(_ => new TokenService());
 
             services.AddControllers()
                 .AddXmlDataContractSerializerFormatters()
