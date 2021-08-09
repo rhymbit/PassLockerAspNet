@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using PassLockerDatabase;
 using PassLocker.Services.GoogleLogin;
 using PassLocker.Services.Protector;
+using PassLocker.Services.Token;
 using PassLocker.Services.UserDatabase;
 
 namespace PassLocker
@@ -42,6 +43,9 @@ namespace PassLocker
 
             // Register custom UserDatabase service
             services.AddScoped<IUserDatabase, UserDatabase>();
+            
+            // Register custom token service
+            services.AddScoped<TokenService>();
 
             services.AddControllers()
                 .AddXmlDataContractSerializerFormatters()
