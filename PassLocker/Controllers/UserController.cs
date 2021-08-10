@@ -60,11 +60,17 @@ namespace PassLocker.Controllers
                 return BadRequest(ModelState);
             }
 
-            // user = protector.CreateHashedPassword(user);
+            var (hashedPassword, passwordSalt) = protector.CreateHashedStringAndSalt(
+                user.Password);
+            var (hashedSecrete, secretSalt) = protector.CreateHashedStringAndSalt(
+                user.Secret);
 
-            var newUser = GoogleUserToDatabaseDto(user);
+            user.Password = hashedPassword;
+            user.Secret = hashedSecrete;
+
+            var newUser = GoogleUserToDatabaseDto(user, passwordSalt, secretSalt);
             
-            EntityEntry<User> added = await db.Users.AddAsync(newUser);
+            await db.Users.AddAsync(newUser);
             int affected = await db.SaveChangesAsync();
             if (affected == 1)
             {
@@ -158,19 +164,21 @@ namespace PassLocker.Controllers
                 StoredPasswords = user.StoredPasswords
             };
 
-        private static User GoogleUserToDatabaseDto(BasicUserProfile user) =>
+        private static User GoogleUserToDatabaseDto(BasicUserProfile user,
+            string passwordSalt, string secretSalt) =>
             new User
             {
                 UserName = user.Username,
                 UserEmail = user.Email,
-                UserPasswordSalt = "randomPasswordSalt",
-                UserPasswordHash = "randomPasswordHash",
-                UserSecretAnswerHash = "randomUserSecretAnswerHash",
+                UserPasswordSalt = passwordSalt,
+                UserPasswordHash = user.Password,
+                UserSecretSalt = secretSalt,
+                UserSecretAnswerHash = user.Secret,
                 UserConfirmed = true,
                 Name = user.Name,
                 Location = user.Location,
                 Gender = user.Gender,
-                MemberSince = new DateTime().Date,
+                MemberSince = DateTime.Today.ToShortDateString(),
                 StoredPasswords = new List<UserPasswords>()
             };
     }

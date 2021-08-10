@@ -6,15 +6,17 @@ using PassLockerDatabase;
 
 namespace TestingConsole
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static (double, int) GetTuple()
         {
-            using (var db = new PassLockerDbContext())
-            {
-                User firstUser = db.Users.First();
-                Console.WriteLine(firstUser.UserEmail);
-            }
+            var tuple = (1.45, 3);
+            return tuple;
+        }
+
+        private static void Main(string[] args)
+        {
+            Console.WriteLine(DateTime.Today.ToShortDateString());
         }
     }
 }

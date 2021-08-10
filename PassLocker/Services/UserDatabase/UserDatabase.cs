@@ -60,7 +60,7 @@ namespace PassLocker.Services.UserDatabase
                 Confirmed = false,
                 Name = "",
                 Gender = "",
-                MemberSince = DateTime.Today
+                MemberSince = DateTime.Today.ToShortDateString()
             };
     }
 }
