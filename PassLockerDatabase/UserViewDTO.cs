@@ -18,6 +18,6 @@ namespace PassLockerDatabase
         
         public string Location { get; set; }
         public string Gender { get; set; }
-        public DateTime MemberSince { get; set; }
+        public string MemberSince { get; set; }
     }
 }

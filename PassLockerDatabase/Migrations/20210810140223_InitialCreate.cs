@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PassLockerDatabase.Migrations
 {
@@ -17,12 +16,13 @@ namespace PassLockerDatabase.Migrations
                     user_email = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     password_salt = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     user_password_hash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    user_secret_salt = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     user_secret_answer_hash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     user_confirmed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     location = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     gender = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    member_since = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    member_since = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

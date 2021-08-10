@@ -31,6 +31,9 @@ namespace PassLockerDatabase
 
         [Column("user_password_hash")]
         public string UserPasswordHash { get; set; }
+        
+        [Column("user_secret_salt")]
+        public string UserSecretSalt { get; set; }
 
         [Column("user_secret_answer_hash")]
         public string UserSecretAnswerHash { get; set; }
@@ -54,7 +57,7 @@ namespace PassLockerDatabase
         public string Gender { get; set; }
 
         [Column("member_since")]
-        public DateTime MemberSince { get; set; }
+        public string MemberSince { get; set; }
 
         // Relationship
         [InverseProperty(nameof(UserPasswords.User))]
