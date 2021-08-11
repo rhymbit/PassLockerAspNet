@@ -11,25 +11,26 @@ namespace PassLocker.Services.Protector
         public (string, string) CreateHashedStringAndSalt(string stringToHash)
         {
             // generate random salt
-            var saltBytes = new byte[16];
+            var saltBytes = new byte[128 / 8];
             using (var rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(saltBytes);
             }
-
+            
             // generate the salted-hashed password
             var saltedHashedString = SaltAndHashPassword(stringToHash, saltBytes);
             var salt = Convert.ToBase64String(saltBytes);
             return (saltedHashedString, salt);
         }
-
-        public bool CheckHashedString(string hashedString, string salt)
+        
+        public bool CheckStringHashing(string stringToHash, string salt, string savedHashedString)
         {
             byte[] saltBytes = Encoding.UTF8.GetBytes(salt);
             // regenerate salted-hashed password
 
-            var saltedHashedString = SaltAndHashPassword(hashedString, saltBytes);
-            return (saltedHashedString == hashedString);
+            var saltedHashedString = SaltAndHashPassword(stringToHash, saltBytes);
+
+            return (saltedHashedString == savedHashedString);
         }
 
         private static string SaltAndHashPassword(string password, byte[] salt)

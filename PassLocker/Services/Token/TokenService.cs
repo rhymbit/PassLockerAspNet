@@ -10,7 +10,7 @@ namespace PassLocker.Services.Token
     public class TokenService : ITokenService
     {
         private const string Issuer = "https://localhost:5001";
-        private const string Audience = "http://localhost:5001";
+        private const string Audience = "http://localhost:3000";
         private const int ExpirationTime = 60;
 
         /// <summary>

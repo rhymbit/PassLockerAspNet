@@ -62,11 +62,11 @@ namespace PassLocker.Controllers
 
             var (hashedPassword, passwordSalt) = protector.CreateHashedStringAndSalt(
                 user.Password);
-            var (hashedSecrete, secretSalt) = protector.CreateHashedStringAndSalt(
+            var (hashedSecret, secretSalt) = protector.CreateHashedStringAndSalt(
                 user.Secret);
 
             user.Password = hashedPassword;
-            user.Secret = hashedSecrete;
+            user.Secret = hashedSecret;
 
             var newUser = GoogleUserToDatabaseDto(user, passwordSalt, secretSalt);
             

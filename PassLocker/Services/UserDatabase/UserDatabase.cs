@@ -28,11 +28,11 @@ namespace PassLocker.Services.UserDatabase
             }
             catch (ArgumentNullException exp)
             {
-                return GoogleUserDtoNew();
+                return NewGoogleUserDto();
             }
             catch (InvalidOperationException exp)
             {
-                return GoogleUserDtoNew();
+                return NewGoogleUserDto();
             }
         }
         
@@ -46,12 +46,13 @@ namespace PassLocker.Services.UserDatabase
                 Confirmed = user.UserConfirmed,
                 Name = user.Name,
                 Gender = user.Gender,
+                Location =  user.Location,
                 MemberSince = user.MemberSince
             };
         
         // When user doesn't exists in the database, an empty user is sent to frontend
         // with `UserId = 0`
-        private static UserViewDTO GoogleUserDtoNew() =>
+        private static UserViewDTO NewGoogleUserDto() =>
             new UserViewDTO()
             {
                 UserId = 0,
