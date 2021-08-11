@@ -23,13 +23,13 @@ namespace PassLocker.Services.Protector
             return (saltedHashedString, salt);
         }
 
-        public bool CheckPassword(User user)
+        public bool CheckHashedString(string hashedString, string salt)
         {
-            byte[] saltBytes = Encoding.UTF8.GetBytes(user.UserPasswordSalt);
+            byte[] saltBytes = Encoding.UTF8.GetBytes(salt);
             // regenerate salted-hashed password
 
-            var saltedHashedPassword = SaltAndHashPassword(user.UserPassword, saltBytes);
-            return (saltedHashedPassword == user.UserPasswordHash);
+            var saltedHashedString = SaltAndHashPassword(hashedString, saltBytes);
+            return (saltedHashedString == hashedString);
         }
 
         private static string SaltAndHashPassword(string password, byte[] salt)

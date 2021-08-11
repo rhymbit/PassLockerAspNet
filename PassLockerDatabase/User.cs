@@ -14,13 +14,13 @@ namespace PassLockerDatabase
             StoredPasswords = new HashSet<UserPasswords>();
         }
 
-        [Column("user_id")]
+        [Column("id")]
         public int UserId { get; set; }
 
-        [Column("user_name")]
+        [Column("username")]
         public string UserName { get; set; }
 
-        [Column("user_email")]
+        [Column("email")]
         public string UserEmail { get; set; }
 
         [NotMapped]
@@ -29,16 +29,16 @@ namespace PassLockerDatabase
         [Column("password_salt")]
         public string UserPasswordSalt { get; set; }
 
-        [Column("user_password_hash")]
+        [Column("password_hash")]
         public string UserPasswordHash { get; set; }
         
-        [Column("user_secret_salt")]
+        [Column("secret_salt")]
         public string UserSecretSalt { get; set; }
 
-        [Column("user_secret_answer_hash")]
+        [Column("secret_hash")]
         public string UserSecretAnswerHash { get; set; }
 
-        [Column("user_confirmed")]
+        [Column("confirmed")]
         public bool UserConfirmed { get; set; }
 
         // Some Basic Information

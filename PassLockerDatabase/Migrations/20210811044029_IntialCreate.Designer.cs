@@ -9,8 +9,8 @@ using PassLockerDatabase;
 namespace PassLockerDatabase.Migrations
 {
     [DbContext(typeof(PassLockerDbContext))]
-    [Migration("20210810140223_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210811044029_IntialCreate")]
+    partial class IntialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -25,7 +25,7 @@ namespace PassLockerDatabase.Migrations
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("user_id")
+                        .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Gender")
@@ -53,23 +53,23 @@ namespace PassLockerDatabase.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false)
-                        .HasColumnName("user_confirmed");
+                        .HasColumnName("confirmed");
 
                     b.Property<string>("UserEmail")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
-                        .HasColumnName("user_email");
+                        .HasColumnName("email");
 
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
-                        .HasColumnName("user_name");
+                        .HasColumnName("username");
 
                     b.Property<string>("UserPasswordHash")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("user_password_hash");
+                        .HasColumnName("password_hash");
 
                     b.Property<string>("UserPasswordSalt")
                         .HasColumnType("nvarchar(max)")
@@ -77,11 +77,11 @@ namespace PassLockerDatabase.Migrations
 
                     b.Property<string>("UserSecretAnswerHash")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("user_secret_answer_hash");
+                        .HasColumnName("secret_hash");
 
                     b.Property<string>("UserSecretSalt")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("user_secret_salt");
+                        .HasColumnName("secret_salt");
 
                     b.HasKey("UserId");
 
@@ -93,7 +93,7 @@ namespace PassLockerDatabase.Migrations
                     b.Property<int>("UserPasswordsId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("user_password_id")
+                        .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("DomainName")
@@ -104,7 +104,11 @@ namespace PassLockerDatabase.Migrations
                     b.Property<string>("DomainPasswordHash")
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)")
-                        .HasColumnName("domain_password_hash");
+                        .HasColumnName("password_hash");
+
+                    b.Property<string>("PasswordSalt")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("password_salt");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int")

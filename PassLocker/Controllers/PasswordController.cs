@@ -11,9 +11,9 @@ namespace PassLocker.Controllers
     public class PasswordController : ControllerBase
     {
         private PassLockerDbContext db;
-        private TokenService tokenService;
+        private ITokenService tokenService;
 
-        public PasswordController(PassLockerDbContext dbContext, TokenService tokenSer)
+        public PasswordController(PassLockerDbContext dbContext, ITokenService tokenSer)
         {
             db = dbContext;
             tokenService = tokenSer;
@@ -35,22 +35,23 @@ namespace PassLocker.Controllers
         }
         
         // GET: api/password/{id}
-        [HttpGet("{id:int}")]
+        [HttpPost("{id:int}")]
         [ProducesResponseType(201)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> GetPermission(int id, [FromHeader] Token token)
+        public async Task<IActionResult> GetPermission(int id, [FromBody] Token token)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest("Data not structured properly in the header");
             }
+            
             var user = await db.Users.FindAsync(id);
             if (user == null)
             {
                 return BadRequest("Invalid user's id. No such user exists");
             }
-
+            
             var isValid = tokenService.ValidateToken(token.PasswordToken, user.UserPasswordHash);
             if (!isValid)
             {
