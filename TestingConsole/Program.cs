@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using PassLockerDatabase;
 
 namespace TestingConsole
@@ -16,7 +18,15 @@ namespace TestingConsole
 
         private static void Main(string[] args)
         {
-            Console.WriteLine(DateTime.Today.ToShortDateString());
+            const string password = "prateek332";
+
+            var protector = new Protector();
+
+            var (hashedPassword, passwordSalt) = protector.CreateHashedStringAndSalt(password);
+
+            Console.WriteLine(protector.VerifyHashing("prateekasf332", hashedPassword, passwordSalt));
+            
+            
         }
     }
 }

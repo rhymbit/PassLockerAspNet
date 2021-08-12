@@ -5,6 +5,6 @@ namespace PassLocker.Services.Protector
     public interface IProtector
     {
         public (string, string) CreateHashedStringAndSalt(string stringToHash);
-        public bool CheckStringHashing(string hashedString, string salt, string savedHashedString);
+        public bool VerifyHashing(string providedString, string savedHashedString, string salt);
     }
 }

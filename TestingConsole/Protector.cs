@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using PassLockerDatabase;
 
-namespace PassLocker.Services.Protector
+namespace TestingConsole
 {
-    public class Protector : IProtector
+    public class Protector
     {
         public (string, string) CreateHashedStringAndSalt(string stringToHash)
         {
@@ -31,13 +31,13 @@ namespace PassLocker.Services.Protector
             return string.Equals(providedHashedString, savedHashedString);
         }
 
-        private static string SaltAndHashString(string password, byte[] salt)
+        private static string SaltAndHashString(string stringToHash, byte[] salt)
         {
             string saltedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: password,
+                password: stringToHash,
                 salt: salt,
                 prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: 10000,
+                iterationCount: 1000,
                 numBytesRequested: 256 / 8));
 
             return saltedPassword;

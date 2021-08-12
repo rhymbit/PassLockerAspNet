@@ -83,15 +83,15 @@ namespace PassLocker.Controllers
                 return BadRequest("User doesn't exist.");
             }
 
-            var isPasswordValid = protector.CheckStringHashing(
-                credentials.password, user.UserPasswordSalt, user.UserPasswordHash);
+            var isPasswordValid = protector.VerifyHashing(
+                credentials.password, user.UserPasswordHash, user.UserPasswordSalt);
             if (!isPasswordValid)
             {
                 return Unauthorized("Incorrect password");
             }
 
-            var isSecretValid = protector.CheckStringHashing(
-                credentials.secret, user.UserSecretSalt, user.UserSecretAnswerHash);
+            var isSecretValid = protector.VerifyHashing(
+                credentials.secret, user.UserSecretAnswerHash, user.UserSecretSalt);
             if (!isSecretValid)
             {
                 return Unauthorized("Incorrect secret answer");
