@@ -12,7 +12,7 @@ namespace PassLockerDatabase
         {          
         }
         public DbSet<User> Users { get; set; }
-        public DbSet<UserPasswords> UserPasswords { get; set; }
+        public DbSet<UserPassword> UserPasswords { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
@@ -37,6 +37,9 @@ namespace PassLockerDatabase
                 .Property(user => user.UserConfirmed)
                 .HasDefaultValue(false);
 
+            modelBuilder.Entity<UserPassword>()
+                .HasNoKey();
+
         }
         
         /// <summary>
@@ -48,7 +51,7 @@ namespace PassLockerDatabase
         {
             if (Environment.OSVersion.ToString().Contains("Unix", StringComparison.OrdinalIgnoreCase))
             {
-                return "Data Source=accelarator;Initial Catalog=tempdb;User id=sa;Password=Prateek333#;";
+                return "Data Source=acc;Initial Catalog=PassLocker;User id=sa;Password=Prateek332@#;";
             }
 
             return @"Server=PRATEEKPC\SQLEXPRESS;Database=PassLocker;Trusted_Connection=True;";

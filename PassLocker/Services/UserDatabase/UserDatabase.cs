@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using PassLocker.Dto;
 using PassLockerDatabase;
 
 namespace PassLocker.Services.UserDatabase
@@ -19,7 +20,7 @@ namespace PassLocker.Services.UserDatabase
             return db.Users.Any(user => user.UserEmail == email);
         }
 
-        public async Task<UserViewDTO> GetGoogleUser(string email)
+        public async Task<UserViewDto> GetGoogleUser(string email)
         {
             try
             {
@@ -37,8 +38,8 @@ namespace PassLocker.Services.UserDatabase
         }
         
         // When user exists in the database
-        private static UserViewDTO GoogleUserDto(User user) =>
-            new UserViewDTO()
+        private static UserViewDto GoogleUserDto(User user) =>
+            new UserViewDto()
             {
                 UserId = user.UserId,
                 UserEmail = user.UserEmail,
@@ -52,8 +53,8 @@ namespace PassLocker.Services.UserDatabase
         
         // When user doesn't exists in the database, an empty user is sent to frontend
         // with `UserId = 0`
-        private static UserViewDTO NewGoogleUserDto() =>
-            new UserViewDTO()
+        private static UserViewDto NewGoogleUserDto() =>
+            new UserViewDto()
             {
                 UserId = 0,
                 UserEmail = "",

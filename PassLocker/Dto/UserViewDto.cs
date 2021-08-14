@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Pipes;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PassLockerDatabase
+namespace PassLocker.Dto
 {
-    public class UserViewDTO
+    public class UserViewDto
     {
         public int UserId { get; set; }
         public string UserName { get; set; }

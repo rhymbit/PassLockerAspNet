@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
+using PassLocker.Dto;
 using PassLockerDatabase;
 using PassLocker.Services.GoogleLogin;
 using PassLocker.Services.Token;
@@ -21,15 +22,15 @@ namespace PassLocker.Controllers
         }
 
         [HttpPost("google-login")]
-        public async Task<ActionResult> GoogleLogin([FromBody] Token googleAuthToken)
+        public async Task<ActionResult> GoogleLogin([FromBody] string googleToken)
         {
             GoogleJsonWebSignature.Payload payload =
-                await _googleLogin.VerifyTokenAndGetPayload(googleAuthToken);
+                await _googleLogin.VerifyTokenAndGetPayload(googleToken);
             // Malicious User or Not an actual google user
             if (payload == null) return BadRequest("Google user not verified.");
             
             // Get user from the database or get a new user
-            UserViewDTO googleUser = await _database.GetGoogleUser(payload.Email);
+            UserViewDto googleUser = await _database.GetGoogleUser(payload.Email);
             googleUser.Name = payload.Name;
             googleUser.UserEmail = payload.Email;
 

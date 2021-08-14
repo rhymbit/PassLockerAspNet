@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PassLocker.Dto;
 using PassLockerDatabase;
 using PassLocker.Services;
 using PassLocker.Services.Protector;
@@ -33,9 +34,9 @@ namespace PassLocker.Controllers
 
         // GET: api/user/{id}
         [HttpGet("{id:int}")]
-        [ProducesResponseType(200, Type = typeof(UserViewDTO))]
+        [ProducesResponseType(200, Type = typeof(UserViewDto))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<UserViewDTO>> GetUser(int id)
+        public async Task<ActionResult<UserViewDto>> GetUser(int id)
         {
             User user = await db.Users.FindAsync(id);
             if (user == null)
@@ -135,8 +136,8 @@ namespace PassLocker.Controllers
             }
         }
 
-        private static UserViewDTO UserToDto(User user) =>
-            new UserViewDTO
+        private static UserViewDto UserToDto(User user) =>
+            new UserViewDto
             {
                 UserId = user.UserId,
                 UserEmail = user.UserEmail,
@@ -179,7 +180,7 @@ namespace PassLocker.Controllers
                 Location = user.Location,
                 Gender = user.Gender,
                 MemberSince = DateTime.Today.ToShortDateString(),
-                StoredPasswords = new List<UserPasswords>()
+                StoredPasswords = new List<UserPassword>()
             };
     }
 }

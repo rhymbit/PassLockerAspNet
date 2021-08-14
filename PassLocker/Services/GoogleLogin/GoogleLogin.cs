@@ -21,7 +21,7 @@ namespace PassLocker.Services.GoogleLogin
             "https://accounts.google.com"
         };
         
-        public async Task<GoogleJsonWebSignature.Payload> VerifyTokenAndGetPayload(Token.Token token)
+        public async Task<GoogleJsonWebSignature.Payload> VerifyTokenAndGetPayload(string token)
         {
             GoogleJsonWebSignature.Payload payload = null;
             
@@ -30,7 +30,7 @@ namespace PassLocker.Services.GoogleLogin
             
             try
             {
-                payload = await GoogleJsonWebSignature.ValidateAsync(token.GoogleToken);
+                payload = await GoogleJsonWebSignature.ValidateAsync(token);
 
                 if (!payload.Audience.Equals(Configs["GoogleAuth:ClientId"]))
                 {

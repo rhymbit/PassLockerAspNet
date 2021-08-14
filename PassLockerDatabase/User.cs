@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Numerics;
 using System.Threading.Tasks;
 
 namespace PassLockerDatabase
@@ -11,11 +12,11 @@ namespace PassLockerDatabase
     {
         public User()
         {
-            StoredPasswords = new HashSet<UserPasswords>();
+            StoredPasswords = new HashSet<UserPassword>();
         }
 
         [Column("id")]
-        public int UserId { get; set; }
+        public BigInteger UserId { get; set; }
 
         [Column("username")]
         public string UserName { get; set; }
@@ -60,7 +61,7 @@ namespace PassLockerDatabase
         public string MemberSince { get; set; }
 
         // Relationship
-        [InverseProperty(nameof(UserPasswords.User))]
-        public virtual ICollection<UserPasswords> StoredPasswords { get; set; }
+        [InverseProperty(nameof(PassLockerDatabase.UserPassword.User))]
+        public virtual ICollection<UserPassword> StoredPasswords { get; set; }
     }
 }

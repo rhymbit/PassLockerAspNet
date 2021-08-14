@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PassLocker.Dto
 {
-    public class ViewPasswordsDto
+    public class VerifyUserDto
     {
         [FromBody] public string password { get; set; }
 

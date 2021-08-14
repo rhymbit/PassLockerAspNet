@@ -105,7 +105,7 @@ namespace PassLocker
         {
             if (Environment.OSVersion.ToString().Contains("Unix", StringComparison.OrdinalIgnoreCase))
             {
-                return "Data Source=accelarator;Initial Catalog=tempdb;User id=sa;Password=Prateek333#;";
+                return "Data Source=acc;Initial Catalog=PassLocker;User id=sa;Password=Prateek332@#;";
             }
 
             return @"Server=PRATEEKPC\SQLEXPRESS;Database=PassLocker;Trusted_Connection=True;";
