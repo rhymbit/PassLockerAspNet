@@ -59,7 +59,7 @@ namespace PassLocker.Controllers
                 return BadRequest("Invalid user's id. No such user exists");
             }
 
-            var isValid = _tokenService.ValidateToken(token.passwordToken, user.UserSecretAnswerHash);
+            var isValid = _tokenService.ValidateToken(token.passwordToken, user.UserSecretHash);
             if (!isValid)
             {
                 return BadRequest("Token is not valid or has expired");
@@ -93,13 +93,13 @@ namespace PassLocker.Controllers
             }
 
             var isSecretValid = _protector.VerifyHashing(
-                credentials.secret, user.UserSecretAnswerHash, user.UserSecretSalt);
+                credentials.secret, user.UserSecretHash, user.UserSecretSalt);
             if (!isSecretValid)
             {
                 return Unauthorized("Incorrect secret answer");
             }
 
-            var token = _tokenService.CreateToken(user.UserName, user.UserSecretAnswerHash);
+            var token = _tokenService.CreateToken(user.UserName, user.UserSecretHash);
             
             return Ok(token);
         }
@@ -121,7 +121,7 @@ namespace PassLocker.Controllers
             foreach (var password in passwords)
             {
                 var userPassword = CreateUserPassword(id, password.Key, password.Value);
-                user.StoredPasswords.Add(userPassword);
+                user.Passwords.Add(userPassword);
             }
             
             return NoContent();

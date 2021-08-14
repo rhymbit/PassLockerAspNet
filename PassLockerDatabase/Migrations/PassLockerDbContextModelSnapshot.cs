@@ -34,11 +34,15 @@ namespace PassLockerDatabase.Migrations
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
                         .HasColumnName("location");
 
                     b.Property<string>("MemberSince")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("14/08/2021")
                         .HasColumnName("member_since");
 
                     b.Property<string>("Name")
@@ -55,8 +59,8 @@ namespace PassLockerDatabase.Migrations
 
                     b.Property<string>("UserEmail")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("email");
 
                     b.Property<string>("UserName")
@@ -66,45 +70,54 @@ namespace PassLockerDatabase.Migrations
                         .HasColumnName("username");
 
                     b.Property<string>("UserPasswordHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("UserPasswordSalt")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("password_salt");
 
-                    b.Property<string>("UserSecretAnswerHash")
+                    b.Property<string>("UserSecretHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("secret_hash");
 
                     b.Property<string>("UserSecretSalt")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("secret_salt");
 
                     b.HasKey("UserId");
 
+                    b.HasIndex("UserEmail");
+
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("PassLockerDatabase.UserPasswords", b =>
+            modelBuilder.Entity("PassLockerDatabase.UserPassword", b =>
                 {
-                    b.Property<int>("UserPasswordsId")
+                    b.Property<int>("UserPasswordId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("DomainName")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("domain_name");
 
-                    b.Property<string>("DomainPasswordHash")
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("PasswordSalt")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("password_salt");
 
@@ -112,17 +125,17 @@ namespace PassLockerDatabase.Migrations
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
-                    b.HasKey("UserPasswordsId");
+                    b.HasKey("UserPasswordId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("user_passwords");
+                    b.ToTable("user_password");
                 });
 
-            modelBuilder.Entity("PassLockerDatabase.UserPasswords", b =>
+            modelBuilder.Entity("PassLockerDatabase.UserPassword", b =>
                 {
                     b.HasOne("PassLockerDatabase.User", "User")
-                        .WithMany("StoredPasswords")
+                        .WithMany("Passwords")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -132,7 +145,7 @@ namespace PassLockerDatabase.Migrations
 
             modelBuilder.Entity("PassLockerDatabase.User", b =>
                 {
-                    b.Navigation("StoredPasswords");
+                    b.Navigation("Passwords");
                 });
 #pragma warning restore 612, 618
         }

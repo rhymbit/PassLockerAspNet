@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Numerics;
 
 namespace PassLockerDatabase
 {
-    [Table("user_passwords")]
+    [Table("user_password")]
     public class UserPassword
     {
+        [Column("id")]
+        public int UserPasswordId { get; set; }
+        
         [Column("domain_name")]
         [MaxLength(200)]
         public string DomainName { get; set; }
@@ -21,11 +21,8 @@ namespace PassLockerDatabase
         public string PasswordHash { get; set; }
         
         [Column("user_id")]
-        public BigInteger UserId { get; set; }
-
-        // Relationship
-        [ForeignKey(nameof(UserId))]
-        [InverseProperty("StoredPasswords")]
-        public virtual User User { get; set; }
+        public int UserId { get; set; }
+        
+        public User User { get; set; }
     }
 }

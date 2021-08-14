@@ -1,6 +1,5 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace PassLockerDatabase
 {
@@ -23,6 +22,11 @@ namespace PassLockerDatabase
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // For User model
+
+            modelBuilder.Entity<User>()
+                .HasIndex(user => user.UserEmail);
+            
             modelBuilder.Entity<User>()
                 .Property(user => user.UserName)
                 .IsRequired()
@@ -31,14 +35,70 @@ namespace PassLockerDatabase
             modelBuilder.Entity<User>()
                 .Property(user => user.UserEmail)
                 .IsRequired()
-                .HasMaxLength(30);
+                .HasMaxLength(20);
+
+            modelBuilder.Entity<User>()
+                .Property(user => user.UserPasswordSalt)
+                .IsRequired();
+
+            modelBuilder.Entity<User>()
+                .Property(user => user.UserPasswordHash)
+                .IsRequired();
+            
+            modelBuilder.Entity<User>()
+                .Property(user => user.UserSecretSalt)
+                .IsRequired();
+            
+            modelBuilder.Entity<User>()
+                .Property(user => user.UserSecretHash)
+                .IsRequired();
 
             modelBuilder.Entity<User>()
                 .Property(user => user.UserConfirmed)
                 .HasDefaultValue(false);
 
+            modelBuilder.Entity<User>()
+                .Property(user => user.Name)
+                .IsRequired()
+                .HasMaxLength(30);
+
+            modelBuilder.Entity<User>()
+                .Property(user => user.Location)
+                .IsRequired()
+                .HasMaxLength(10);
+
+            modelBuilder.Entity<User>()
+                .Property(user => user.Gender)
+                .IsRequired()
+                .HasMaxLength(6);
+
+            modelBuilder.Entity<User>()
+                .Property(user => user.MemberSince)
+                .IsRequired()
+                .HasDefaultValue(DateTime.Today.ToShortDateString());
+
+            // For Password model
+
             modelBuilder.Entity<UserPassword>()
-                .HasNoKey();
+                .HasOne(p => p.User)
+                .WithMany(u => u.Passwords);
+
+            modelBuilder.Entity<UserPassword>()
+                .Property(pass => pass.DomainName)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            modelBuilder.Entity<UserPassword>()
+                .Property(pass => pass.PasswordSalt)
+                .IsRequired();
+
+            modelBuilder.Entity<UserPassword>()
+                .Property(pass => pass.PasswordHash)
+                .IsRequired();
+
+            modelBuilder.Entity<UserPassword>()
+                .Property(pass => pass.UserId)
+                .IsRequired();
 
         }
         

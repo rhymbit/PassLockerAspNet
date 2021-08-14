@@ -13,16 +13,16 @@ namespace PassLockerDatabase.Migrations
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     username = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    email = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    password_salt = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    password_hash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    secret_salt = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    secret_hash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    email = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    password_salt = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    password_hash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    secret_salt = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    secret_hash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     confirmed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    location = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     gender = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    member_since = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    member_since = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "14/08/2021")
                 },
                 constraints: table =>
                 {
@@ -30,21 +30,21 @@ namespace PassLockerDatabase.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "user_passwords",
+                name: "user_password",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    domain_name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    password_salt = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    password_hash = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
+                    domain_name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    password_salt = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    password_hash = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     user_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_user_passwords", x => x.id);
+                    table.PrimaryKey("PK_user_password", x => x.id);
                     table.ForeignKey(
-                        name: "FK_user_passwords_users_user_id",
+                        name: "FK_user_password_users_user_id",
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -52,15 +52,20 @@ namespace PassLockerDatabase.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_user_passwords_user_id",
-                table: "user_passwords",
+                name: "IX_user_password_user_id",
+                table: "user_password",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_users_email",
+                table: "users",
+                column: "email");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "user_passwords");
+                name: "user_password");
 
             migrationBuilder.DropTable(
                 name: "users");

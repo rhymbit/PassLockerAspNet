@@ -1,3 +1,6 @@
+using System;
+using System.Numerics;
+
 namespace PassLocker.Dto
 {
     public class UserViewDto

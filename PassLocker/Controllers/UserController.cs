@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PassLocker.Dto;
-using PassLockerDatabase;
-using PassLocker.Services;
 using PassLocker.Services.Protector;
-using PassLockerDatabase.Google;
+using PassLockerDatabase;
 
 namespace PassLocker.Controllers
 {
@@ -48,9 +45,9 @@ namespace PassLocker.Controllers
 
         // POST: api/user/create-user
         [HttpPost("create-user")]
-        [ProducesResponseType(201, Type = typeof(BasicUserProfile))]
+        [ProducesResponseType(201, Type = typeof(GoogleBasicUserProfile))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> CreateUser([FromBody] BasicUserProfile user)
+        public async Task<IActionResult> CreateUser([FromBody] GoogleBasicUserProfile user)
         {
             if (user == null)
             {
@@ -156,16 +153,16 @@ namespace PassLocker.Controllers
                 UserEmail = user.UserEmail,
                 UserPasswordSalt = user.UserPasswordSalt,
                 UserPasswordHash = user.UserPasswordHash,
-                UserSecretAnswerHash = user.UserSecretAnswerHash,
+                UserSecretHash = user.UserSecretHash,
                 UserConfirmed = user.UserConfirmed,
                 Name = user.Name,
                 Location = user.Location,
                 Gender = user.Gender,
                 MemberSince = user.MemberSince,
-                StoredPasswords = user.StoredPasswords
+                Passwords = user.Passwords
             };
 
-        private static User GoogleUserToDatabaseDto(BasicUserProfile user,
+        private static User GoogleUserToDatabaseDto(GoogleBasicUserProfile user,
             string passwordSalt, string secretSalt) =>
             new User
             {
@@ -174,13 +171,13 @@ namespace PassLocker.Controllers
                 UserPasswordSalt = passwordSalt,
                 UserPasswordHash = user.Password,
                 UserSecretSalt = secretSalt,
-                UserSecretAnswerHash = user.Secret,
+                UserSecretHash = user.Secret,
                 UserConfirmed = true,
                 Name = user.Name,
                 Location = user.Location,
                 Gender = user.Gender,
                 MemberSince = DateTime.Today.ToShortDateString(),
-                StoredPasswords = new List<UserPassword>()
+                Passwords = new List<UserPassword>()
             };
     }
 }

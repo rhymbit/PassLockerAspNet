@@ -1,6 +1,6 @@
-namespace PassLockerDatabase.Google
+namespace PassLocker.Dto
 {
-    public class BasicUserProfile
+    public class GoogleBasicUserProfile
     {
         public string Username { get; set; }
         public string Password { get; set; }
