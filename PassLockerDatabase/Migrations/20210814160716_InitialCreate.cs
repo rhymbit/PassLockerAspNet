@@ -10,8 +10,7 @@ namespace PassLockerDatabase.Migrations
                 name: "users",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     username = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     email = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     password_salt = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -33,28 +32,28 @@ namespace PassLockerDatabase.Migrations
                 name: "user_password",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     domain_name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     password_salt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     password_hash = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    user_id = table.Column<int>(type: "int", nullable: false),
+                    UserId1 = table.Column<string>(type: "nvarchar(40)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_user_password", x => x.id);
                     table.ForeignKey(
-                        name: "FK_user_password_users_user_id",
-                        column: x => x.user_id,
+                        name: "FK_user_password_users_UserId1",
+                        column: x => x.UserId1,
                         principalTable: "users",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_user_password_user_id",
+                name: "IX_user_password_UserId1",
                 table: "user_password",
-                column: "user_id");
+                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_email",

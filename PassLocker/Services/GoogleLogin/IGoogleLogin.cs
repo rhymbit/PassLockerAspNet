@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Google.Apis.Auth;
-using PassLocker.Controllers;
 
 namespace PassLocker.Services.GoogleLogin
 {

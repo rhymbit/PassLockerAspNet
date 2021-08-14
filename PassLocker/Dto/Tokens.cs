@@ -5,9 +5,9 @@ namespace PassLocker.Dto
     public class Tokens
     {
         [FromBody]
-        public string googleToken { get; set; }
+        public string GoogleToken { get; set; }
         
         [FromBody]
-        public string passwordToken { get; set; }
+        public string PasswordToken { get; set; }
     }
 }

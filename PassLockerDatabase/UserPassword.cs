@@ -7,7 +7,7 @@ namespace PassLockerDatabase
     public class UserPassword
     {
         [Column("id")]
-        public int UserPasswordId { get; set; }
+        public string UserPasswordId { get; set; }
         
         [Column("domain_name")]
         [MaxLength(200)]

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Microsoft.Extensions.Configuration;
-using PassLocker.Controllers;
 
 namespace PassLocker.Services.GoogleLogin
 {

@@ -20,11 +20,11 @@ namespace PassLockerDatabase.Migrations
 
             modelBuilder.Entity("PassLockerDatabase.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<string>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("id");
 
                     b.Property<string>("Gender")
                         .IsRequired()
@@ -98,11 +98,11 @@ namespace PassLockerDatabase.Migrations
 
             modelBuilder.Entity("PassLockerDatabase.UserPassword", b =>
                 {
-                    b.Property<int>("UserPasswordId")
+                    b.Property<string>("UserPasswordId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("id");
 
                     b.Property<string>("DomainName")
                         .IsRequired()
@@ -125,9 +125,12 @@ namespace PassLockerDatabase.Migrations
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
+                    b.Property<string>("UserId1")
+                        .HasColumnType("nvarchar(40)");
+
                     b.HasKey("UserPasswordId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId1");
 
                     b.ToTable("user_password");
                 });
@@ -136,9 +139,7 @@ namespace PassLockerDatabase.Migrations
                 {
                     b.HasOne("PassLockerDatabase.User", "User")
                         .WithMany("Passwords")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("User");
                 });

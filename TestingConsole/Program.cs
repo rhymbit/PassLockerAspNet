@@ -1,4 +1,6 @@
-﻿namespace TestingConsole
+﻿using System;
+
+namespace TestingConsole
 {
     internal class Program
     {
@@ -10,7 +12,10 @@
 
         private static void Main(string[] args)
         {
-            CheckSqlConnection.Connect();
+            Guid myuuid = Guid.NewGuid();
+            Console.WriteLine(myuuid.GetType());
+            string myuuidAsString = myuuid.ToString();
+            Console.WriteLine(myuuidAsString.Length);
         }
     }
 }

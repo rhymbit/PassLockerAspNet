@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 using PassLocker.Dto;
-using PassLockerDatabase;
 using PassLocker.Services.GoogleLogin;
-using PassLocker.Services.Token;
 using PassLocker.Services.UserDatabase;
 
 namespace PassLocker.Controllers

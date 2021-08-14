@@ -56,13 +56,13 @@ namespace PassLocker.Services.UserDatabase
         private static UserViewDto NewGoogleUserDto() =>
             new UserViewDto()
             {
-                UserId = 0,
+                UserId = "",
                 UserEmail = "",
                 UserName = "",
                 Confirmed = false,
                 Name = "",
                 Gender = "",
-                MemberSince = DateTime.Today.ToShortDateString()
+                MemberSince = ""
             };
     }
 }

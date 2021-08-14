@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using PassLocker.Dto;
-using PassLockerDatabase;
 
 namespace PassLocker.Services.UserDatabase
 {

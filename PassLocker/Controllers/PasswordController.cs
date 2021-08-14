@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PassLocker.Dto;
@@ -59,7 +57,7 @@ namespace PassLocker.Controllers
                 return BadRequest("Invalid user's id. No such user exists");
             }
 
-            var isValid = _tokenService.ValidateToken(token.passwordToken, user.UserSecretHash);
+            var isValid = _tokenService.ValidateToken(token.PasswordToken, user.UserSecretHash);
             if (!isValid)
             {
                 return BadRequest("Token is not valid or has expired");

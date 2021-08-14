@@ -1,7 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Reflection.PortableExecutable;
 using System.Security.Claims;
+using System.Text;
 using System.Threading;
 using Microsoft.IdentityModel.Tokens;
 
@@ -29,12 +29,12 @@ namespace PassLocker.Services.Token
             });
 
             var securityKey = new
-                Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                    System.Text.Encoding.Default.GetBytes(sec));
+                SymmetricSecurityKey(
+                    Encoding.Default.GetBytes(sec));
 
             var signingCredentials = new
-                Microsoft.IdentityModel.Tokens.SigningCredentials(securityKey,
-                    Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256Signature);
+                SigningCredentials(securityKey,
+                    SecurityAlgorithms.HmacSha256Signature);
 
             var token = (JwtSecurityToken) tokenHandler.CreateJwtSecurityToken(
                 issuer: Issuer,
@@ -51,8 +51,8 @@ namespace PassLocker.Services.Token
         public bool ValidateToken(string token, string sec)
         {
             var securityKey = new
-                Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                    System.Text.Encoding.Default.GetBytes(sec));
+                SymmetricSecurityKey(
+                    Encoding.Default.GetBytes(sec));
 
             var handler = new JwtSecurityTokenHandler();
 

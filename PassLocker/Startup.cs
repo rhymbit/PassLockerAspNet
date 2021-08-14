@@ -7,11 +7,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using PassLockerDatabase;
 using PassLocker.Services.GoogleLogin;
 using PassLocker.Services.Protector;
 using PassLocker.Services.Token;
 using PassLocker.Services.UserDatabase;
+using PassLockerDatabase;
 
 namespace PassLocker
 {

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using PassLockerDatabase;
 
 namespace PassLocker.Services.Protector
 {
     public class Protector : IProtector
     {
+        public string GetUuid() =>
+            Guid.NewGuid().ToString();
         public (string, string) CreateHashedStringAndSalt(string stringToHash)
         {
             // generate random salt

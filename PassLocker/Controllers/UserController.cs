@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PassLocker.Dto;
 using PassLocker.Services.Protector;
 using PassLockerDatabase;
@@ -14,32 +15,41 @@ namespace PassLocker.Controllers
     {
         private PassLockerDbContext db;
         private readonly IProtector protector;
+
         public UserController(PassLockerDbContext dbContext, IProtector protector)
         {
             this.db = dbContext;
             this.protector = protector;
         }
-        
+
         // GET: api/user
-        [HttpGet]
+        [HttpGet("all-users")]
         [ProducesResponseType(404)]
-        public IActionResult Get()
+        public async Task<ActionResult<UserViewDto>> Get()
         {
-            return BadRequest("Inaccessible url");
+            List<User> _users = await db.Users.ToListAsync();
+            var users = new List<UserViewDto>();
+            foreach (var user in _users)
+            {
+                users.Add(UserToDto(user));
+            }
+
+            return Ok(users);
         }
-        
+
 
         // GET: api/user/{id}
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(UserViewDto))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<UserViewDto>> GetUser(int id)
+        public async Task<ActionResult<UserViewDto>> GetUser(string id)
         {
             User user = await db.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound("User does not exists");
             }
+
             return UserToDto(user);
         }
 
@@ -53,6 +63,7 @@ namespace PassLocker.Controllers
             {
                 return BadRequest("Invalid request content. User's info is invalid");
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -67,7 +78,7 @@ namespace PassLocker.Controllers
             user.Secret = hashedSecret;
 
             var newUser = GoogleUserToDatabaseDto(user, passwordSalt, secretSalt);
-            
+
             await db.Users.AddAsync(newUser);
             int affected = await db.SaveChangesAsync();
             if (affected == 1)
@@ -80,21 +91,22 @@ namespace PassLocker.Controllers
             }
         }
 
-        [HttpPut("{id:int}/edit-profile")]
+        [HttpPut("{id}/edit-profile")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] User user)
         {
-            if (user == null || user.UserId != id)
+            if (user == null || !user.UserId.Equals(id))
             {
                 return BadRequest("Invalid request content. User's info is invalid");
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
             // protector.CreateHashedStringAndSalt(user.UserPassword);
 
             User new_user = UserToDatabaseDto(user);
@@ -105,22 +117,24 @@ namespace PassLocker.Controllers
             {
                 return NoContent();
             }
-            else {
+            else
+            {
                 return NotFound("User could not be found in database");
             }
         }
 
-        [HttpDelete("{id:int}/delete-profile")]
+        [HttpDelete("{id}/delete-profile")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
             User user = await db.Users.FindAsync(id);
             if (user == null)
             {
                 return BadRequest("User does not exists");
             }
+
             db.Users.Remove(user);
             int affected = await db.SaveChangesAsync();
             if (affected == 1)
@@ -144,7 +158,7 @@ namespace PassLocker.Controllers
                 Gender = user.Gender,
                 MemberSince = user.MemberSince
             };
-        
+
         private static User UserToDatabaseDto(User user) =>
             new User
             {
@@ -162,9 +176,11 @@ namespace PassLocker.Controllers
                 Passwords = user.Passwords
             };
 
-        private static User GoogleUserToDatabaseDto(GoogleBasicUserProfile user,
-            string passwordSalt, string secretSalt) =>
-            new User
+        private User GoogleUserToDatabaseDto(GoogleBasicUserProfile user,
+            string passwordSalt, string secretSalt)
+        {
+            // creating a new user with details from front-end
+            var newUser = new User
             {
                 UserName = user.Username,
                 UserEmail = user.Email,
@@ -179,5 +195,12 @@ namespace PassLocker.Controllers
                 MemberSince = DateTime.Today.ToShortDateString(),
                 Passwords = new List<UserPassword>()
             };
+            
+            // creating a unique uuid for user
+            var uuid = protector.GetUuid();
+            newUser.UserId = uuid;
+
+            return newUser;
+        }
     }
 }

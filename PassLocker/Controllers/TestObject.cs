@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-
-namespace PassLocker.Controllers
+﻿namespace PassLocker.Controllers
 {
     public class TestObject
     {

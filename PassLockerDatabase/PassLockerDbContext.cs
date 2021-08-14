@@ -25,8 +25,17 @@ namespace PassLockerDatabase
             // For User model
 
             modelBuilder.Entity<User>()
-                .HasIndex(user => user.UserEmail);
+                .HasKey(user => user.UserId);
             
+            modelBuilder.Entity<User>()
+                .HasIndex(user => user.UserEmail);
+
+            modelBuilder.Entity<User>()
+                .Property(user => user.UserId)
+                .IsRequired()
+                .HasMaxLength(40)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<User>()
                 .Property(user => user.UserName)
                 .IsRequired()
@@ -78,6 +87,15 @@ namespace PassLockerDatabase
                 .HasDefaultValue(DateTime.Today.ToShortDateString());
 
             // For Password model
+
+            modelBuilder.Entity<UserPassword>()
+                .HasKey(pass => pass.UserPasswordId);
+
+            modelBuilder.Entity<UserPassword>()
+                .Property(pass => pass.UserPasswordId)
+                .IsRequired()
+                .HasMaxLength(40)
+                .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<UserPassword>()
                 .HasOne(p => p.User)

@@ -14,7 +14,7 @@ namespace PassLockerDatabase
         }
 
         [Column("id")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         [Column("username")]
         public string UserName { get; set; }
