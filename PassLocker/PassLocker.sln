@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassLocker", "PassLocker.csproj", "{937D6FB9-CA6D-4FEE-B288-21158D147A91}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PassLockerDatabase", "..\PassLockerDatabase\PassLockerDatabase.csproj", "{4D460B16-3EC6-4407-801F-8ACD758B8C65}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingConsole", "..\TestingConsole\TestingConsole.csproj", "{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassLockerDatabase", "..\PassLockerDatabase\PassLockerDatabase.csproj", "{04C9E8A3-B2FD-4BA8-8C8B-B6403D86F617}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +19,14 @@ Global
 		{937D6FB9-CA6D-4FEE-B288-21158D147A91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{937D6FB9-CA6D-4FEE-B288-21158D147A91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{937D6FB9-CA6D-4FEE-B288-21158D147A91}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D460B16-3EC6-4407-801F-8ACD758B8C65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D460B16-3EC6-4407-801F-8ACD758B8C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D460B16-3EC6-4407-801F-8ACD758B8C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D460B16-3EC6-4407-801F-8ACD758B8C65}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04C9E8A3-B2FD-4BA8-8C8B-B6403D86F617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04C9E8A3-B2FD-4BA8-8C8B-B6403D86F617}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04C9E8A3-B2FD-4BA8-8C8B-B6403D86F617}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04C9E8A3-B2FD-4BA8-8C8B-B6403D86F617}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

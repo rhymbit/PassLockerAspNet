@@ -21,7 +21,7 @@ namespace PassLockerDatabase.Migrations
                     name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     location = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     gender = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    member_since = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "14/08/2021")
+                    member_since = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "15/08/2021")
                 },
                 constraints: table =>
                 {

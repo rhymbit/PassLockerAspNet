@@ -125,7 +125,7 @@ namespace PassLockerDatabase
         /// Remove this method in production
         /// </summary>
         /// <returns>Sql connection string for the current OS.</returns>
-        private string BackupConnectionString()
+        private static string BackupConnectionString()
         {
             if (Environment.OSVersion.ToString().Contains("Unix", StringComparison.OrdinalIgnoreCase))
             {
