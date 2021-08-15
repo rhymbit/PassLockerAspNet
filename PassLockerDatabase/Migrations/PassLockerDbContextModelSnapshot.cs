@@ -34,8 +34,8 @@ namespace PassLockerDatabase.Migrations
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("location");
 
                     b.Property<string>("MemberSince")
@@ -47,8 +47,8 @@ namespace PassLockerDatabase.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
                         .HasColumnName("name");
 
                     b.Property<bool>("UserConfirmed")
@@ -59,8 +59,8 @@ namespace PassLockerDatabase.Migrations
 
                     b.Property<string>("UserEmail")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("email");
 
                     b.Property<string>("UserName")
@@ -106,14 +106,13 @@ namespace PassLockerDatabase.Migrations
 
                     b.Property<string>("DomainName")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)")
                         .HasColumnName("domain_name");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("PasswordSalt")
@@ -121,16 +120,14 @@ namespace PassLockerDatabase.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("password_salt");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(40)")
                         .HasColumnName("user_id");
-
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("UserPasswordId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("user_password");
                 });
@@ -139,7 +136,9 @@ namespace PassLockerDatabase.Migrations
                 {
                     b.HasOne("PassLockerDatabase.User", "User")
                         .WithMany("Passwords")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

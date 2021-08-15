@@ -26,7 +26,7 @@ namespace PassLockerDatabase
 
             modelBuilder.Entity<User>()
                 .HasKey(user => user.UserId);
-            
+
             modelBuilder.Entity<User>()
                 .HasIndex(user => user.UserEmail);
 
@@ -44,7 +44,7 @@ namespace PassLockerDatabase
             modelBuilder.Entity<User>()
                 .Property(user => user.UserEmail)
                 .IsRequired()
-                .HasMaxLength(20);
+                .HasMaxLength(50);
 
             modelBuilder.Entity<User>()
                 .Property(user => user.UserPasswordSalt)
@@ -69,12 +69,12 @@ namespace PassLockerDatabase
             modelBuilder.Entity<User>()
                 .Property(user => user.Name)
                 .IsRequired()
-                .HasMaxLength(30);
+                .HasMaxLength(40);
 
             modelBuilder.Entity<User>()
                 .Property(user => user.Location)
                 .IsRequired()
-                .HasMaxLength(10);
+                .HasMaxLength(20);
 
             modelBuilder.Entity<User>()
                 .Property(user => user.Gender)
@@ -98,13 +98,9 @@ namespace PassLockerDatabase
                 .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<UserPassword>()
-                .HasOne(p => p.User)
-                .WithMany(u => u.Passwords);
-
-            modelBuilder.Entity<UserPassword>()
                 .Property(pass => pass.DomainName)
                 .IsRequired()
-                .HasMaxLength(20);
+                .HasMaxLength(30);
 
             modelBuilder.Entity<UserPassword>()
                 .Property(pass => pass.PasswordSalt)
@@ -117,6 +113,13 @@ namespace PassLockerDatabase
             modelBuilder.Entity<UserPassword>()
                 .Property(pass => pass.UserId)
                 .IsRequired();
+            
+            // Relationships
+
+            modelBuilder.Entity<UserPassword>()
+                .HasOne(p => p.User)
+                .WithMany(u => u.Passwords)
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
         

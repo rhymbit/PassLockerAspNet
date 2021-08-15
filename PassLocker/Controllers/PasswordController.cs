@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PassLocker.Dto;
@@ -9,7 +11,7 @@ using PassLockerDatabase;
 namespace PassLocker.Controllers
 {
     [ApiController]
-    [Route("api/[Controller]/{id:int}")]
+    [Route("api/[Controller]/{id}")]
     public class PasswordController : ControllerBase
     {
         private readonly PassLockerDbContext _db;
@@ -27,7 +29,7 @@ namespace PassLocker.Controllers
         // GET: api/password/test-token/{id}
         [HttpGet("test-token")]
         [ProducesResponseType(200, Type = typeof(string))]
-        public async Task<IActionResult> GetTestToken(int id)
+        public async Task<IActionResult> GetTestToken(string id)
         {
             var user = await _db.Users.FindAsync(id);
             if (user == null)
@@ -44,7 +46,7 @@ namespace PassLocker.Controllers
         [HttpPost("verify-token")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> VerifyToken(int id, [FromBody] Tokens token)
+        public async Task<IActionResult> VerifyToken(string id, [FromBody] Tokens token)
         {
             if (!ModelState.IsValid)
             {
@@ -70,7 +72,7 @@ namespace PassLocker.Controllers
         [ProducesResponseType(200, Type = typeof(string))]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public async Task<ActionResult<string>> VerifyUser(int id, [FromBody] VerifyUserDto credentials)
+        public async Task<ActionResult<string>> VerifyUser(string id, [FromBody] VerifyUserDto credentials)
         {
             if (!ModelState.IsValid)
             {
@@ -98,12 +100,12 @@ namespace PassLocker.Controllers
             }
 
             var token = _tokenService.CreateToken(user.UserName, user.UserSecretHash);
-            
+
             return Ok(token);
         }
 
         [HttpPost("create-passwords")]
-        public async Task<IActionResult> CreatePasswords(int id, [FromBody] Dictionary<string, string> passwords)
+        public async Task<IActionResult> CreatePasswords(string id, [FromBody] Dictionary<string, string> passwords)
         {
             if (!ModelState.IsValid)
             {
@@ -115,29 +117,71 @@ namespace PassLocker.Controllers
             {
                 return BadRequest("User dose not exist.");
             }
+            
+            // get all stored passwords
+            var userPasswords = user.Passwords;
+            Console.WriteLine(userPasswords.Count);
 
-            foreach (var password in passwords)
+            foreach (var pass in userPasswords)
             {
-                var userPassword = CreateUserPassword(id, password.Key, password.Value);
-                user.Passwords.Add(userPassword);
+                Console.WriteLine(pass);
+            }
+
+            foreach (var storedPassword in userPasswords)
+            {
+                var domainName = storedPassword.DomainName;
+                foreach (var providedPassword in passwords)
+                {
+                    // if any of the password's domain name already exists
+                    // then we just have to update the password
+                    if (domainName.Equals(providedPassword.Key)) // Key is the domain name, Value is the password
+                    {
+                        var newEntry = CreateUserPassword(
+                            user.UserId, domainName, providedPassword.Value, user.UserPasswordSalt);
+                        // must use the same 'id' value to update changes instead of creating a new one
+                        newEntry.UserPasswordId = storedPassword.UserPasswordId;
+                        _db.UserPasswords.Update(newEntry);
+                        
+                        // remove this key-value pair from the dictionary
+                        passwords.Remove(providedPassword.Key);
+                    }
+                }
             }
             
-            return NoContent();
+            // create a new entry for rest of the passwords
+            foreach (var password in passwords)
+            {
+                var userPassword = CreateUserPassword(id, password.Key, password.Value, user.UserPasswordSalt);
+                user.Passwords.Add(userPassword);
+                await _db.UserPasswords.AddAsync(userPassword);
+                _db.Users.Update(user);
+            }
+
+            int affected = await _db.SaveChangesAsync();
+            if (affected == 1)
+            {
+                return NoContent();
+            }
+
+            return Problem("Problem at the server. Cannot create password.");
         }
 
-        private static UserPassword CreateUserPassword(int userId, string domain, string password)
+        private UserPassword CreateUserPassword(string userId, string domain, string domainPassword, string salt)
         {
-            var protector = new Protector();
-            
-            var (passwordHash, salt) = protector.CreateHashedStringAndSalt(password);
-            
+            var encryptedPassword = _protector.EncryptData(
+                domainPassword, "MySecretPassword", salt);
+
             var userPassword = new UserPassword()
             {
                 DomainName = domain,
                 PasswordSalt = salt,
-                PasswordHash = passwordHash,
+                PasswordHash = encryptedPassword,
                 UserId = userId
             };
+            
+            // creating a unique uuid for password
+            var uuid = _protector.GetUuid();
+            userPassword.UserPasswordId = uuid;
 
             return userPassword;
         }

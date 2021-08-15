@@ -117,10 +117,7 @@ namespace PassLocker.Controllers
             {
                 return NoContent();
             }
-            else
-            {
-                return NotFound("User could not be found in database");
-            }
+            return NotFound("User could not be found in database");
         }
 
         [HttpDelete("{id}/delete-profile")]
@@ -192,8 +189,7 @@ namespace PassLocker.Controllers
                 Name = user.Name,
                 Location = user.Location,
                 Gender = user.Gender,
-                MemberSince = DateTime.Today.ToShortDateString(),
-                Passwords = new List<UserPassword>()
+                MemberSince = DateTime.Today.ToShortDateString()
             };
             
             // creating a unique uuid for user

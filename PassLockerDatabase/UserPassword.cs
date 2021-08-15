@@ -10,18 +10,16 @@ namespace PassLockerDatabase
         public string UserPasswordId { get; set; }
         
         [Column("domain_name")]
-        [MaxLength(200)]
         public string DomainName { get; set; }
         
         [Column("password_salt")]
         public string PasswordSalt { get; set; }
 
         [Column("password_hash")]
-        [MaxLength(40)]
         public string PasswordHash { get; set; }
         
         [Column("user_id")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         
         public User User { get; set; }
     }
