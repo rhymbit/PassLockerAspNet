@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PassLocker.Dto;
 using PassLocker.Services.Protector;
 using PassLocker.Services.Token;
@@ -104,8 +105,34 @@ namespace PassLocker.Controllers
             return Ok(token);
         }
 
+        [HttpGet("get-passwords")]
+        public async Task<ActionResult<UserPassword>> GetPasswords(string id)
+        {
+            var myUser = await _db.Users.FindAsync(id);
+
+            var passwordCount = _db.Entry(myUser)
+                .Collection(user => user.Passwords)
+                .Query()
+                .Count();
+
+            await _db.Entry(myUser)
+                .Collection(u => u.Passwords)
+                .LoadAsync();
+
+            foreach (var p in myUser.Passwords)
+            {
+                Console.WriteLine($"{p.DomainName} = {p.PasswordHash}");
+            }
+
+            Console.WriteLine(passwordCount);
+            return Ok();
+        }
+
         [HttpPost("create-passwords")]
-        public async Task<IActionResult> CreatePasswords(string id, [FromBody] Dictionary<string, string> passwords)
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreatePasswords(string id,
+            [FromBody] Dictionary<string, string> providedPasswords)
         {
             if (!ModelState.IsValid)
             {
@@ -117,71 +144,87 @@ namespace PassLocker.Controllers
             {
                 return BadRequest("User dose not exist.");
             }
+
+            // explicitly loading all passwords
+            await _db.Entry(user)
+                .Collection(u => u.Passwords)
+                .LoadAsync();
             
-            // get all stored passwords
-            var userPasswords = user.Passwords;
-            Console.WriteLine(userPasswords.Count);
-
-            foreach (var pass in userPasswords)
+            // list to store any to-be-updated passwords
+            var passwordsToUpdate = new List<UserPassword>();
+            
+            // finding and storing any to-be-updated passwords in `passwordsToUpdate` list
+            foreach (var sp in user.Passwords)
             {
-                Console.WriteLine(pass);
-            }
+                string popOff = null;
 
-            foreach (var storedPassword in userPasswords)
-            {
-                var domainName = storedPassword.DomainName;
-                foreach (var providedPassword in passwords)
+                foreach (var pp in providedPasswords)
                 {
-                    // if any of the password's domain name already exists
-                    // then we just have to update the password
-                    if (domainName.Equals(providedPassword.Key)) // Key is the domain name, Value is the password
+                    if (sp.DomainName.Equals(pp.Key))
                     {
-                        var newEntry = CreateUserPassword(
-                            user.UserId, domainName, providedPassword.Value, user.UserPasswordSalt);
-                        // must use the same 'id' value to update changes instead of creating a new one
-                        newEntry.UserPasswordId = storedPassword.UserPasswordId;
-                        _db.UserPasswords.Update(newEntry);
-                        
-                        // remove this key-value pair from the dictionary
-                        passwords.Remove(providedPassword.Key);
+                        popOff = pp.Key;
+                        var updatedPassword = CreateUserPassword(user.UserId,
+                            sp.DomainName, pp.Value, sp.PasswordSalt, sp.UserPasswordId);
+                        passwordsToUpdate.Add(updatedPassword);
+
+                        // removing the old entry
+                        _db.UserPasswords.Remove(sp);
                     }
                 }
-            }
-            
-            // create a new entry for rest of the passwords
-            foreach (var password in passwords)
-            {
-                var userPassword = CreateUserPassword(id, password.Key, password.Value, user.UserPasswordSalt);
-                user.Passwords.Add(userPassword);
-                await _db.UserPasswords.AddAsync(userPassword);
-                _db.Users.Update(user);
+
+                // pop-off the updated value from `providedPassword`
+                // so later a new password value is not generated for this entry
+                if (popOff != null)
+                {
+                    providedPasswords.Remove(popOff);
+                }
             }
 
-            int affected = await _db.SaveChangesAsync();
-            if (affected == 1)
+            // update password if any needs to be updated
+            if (passwordsToUpdate.Count > 0)
+            {
+                await _db.UserPasswords.AddRangeAsync(passwordsToUpdate);
+            }
+
+            // create a new entry for new values in `providedPasswords`
+            foreach (var password in providedPasswords)
+            {
+                var userPassword = CreateUserPassword(id, password.Key, password.Value, user.UserPasswordSalt);
+                await _db.UserPasswords.AddAsync(userPassword);
+            }
+
+            var affected = await _db.SaveChangesAsync();
+            if (affected > 0)
             {
                 return NoContent();
             }
-
             return Problem("Problem at the server. Cannot create password.");
         }
 
-        private UserPassword CreateUserPassword(string userId, string domain, string domainPassword, string salt)
+        private UserPassword CreateUserPassword(string userId,
+            string domain, string domainPassword, string salt, string passwordId = null)
         {
             var encryptedPassword = _protector.EncryptData(
                 domainPassword, "MySecretPassword", salt);
 
             var userPassword = new UserPassword()
             {
+                UserId = userId,
                 DomainName = domain,
-                PasswordSalt = salt,
                 PasswordHash = encryptedPassword,
-                UserId = userId
+                PasswordSalt = salt,
             };
-            
-            // creating a unique uuid for password
-            var uuid = _protector.GetUuid();
-            userPassword.UserPasswordId = uuid;
+
+            if (passwordId == null)
+            {
+                // creating a unique uuid for password
+                var uuid = _protector.GetUuid();
+                userPassword.UserPasswordId = uuid;
+            }
+            else
+            {
+                userPassword.UserPasswordId = passwordId;
+            }
 
             return userPassword;
         }
