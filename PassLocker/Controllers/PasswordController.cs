@@ -18,6 +18,8 @@ namespace PassLocker.Controllers
         private readonly PassLockerDbContext _db;
         private readonly ITokenService _tokenService;
         private readonly IProtector _protector;
+        
+        private const string MySecretPassword = "MySecretPassword";
 
         public PasswordController(PassLockerDbContext dbContext, ITokenService tokenService, IProtector protector)
         {
@@ -106,32 +108,35 @@ namespace PassLocker.Controllers
         }
 
         [HttpGet("get-passwords")]
-        public async Task<ActionResult<UserPassword>> GetPasswords(string id)
+        public async Task<ActionResult<List<UserPasswordsDto>>> GetPasswords(string id)
         {
-            var myUser = await _db.Users.FindAsync(id);
+            var user = await _db.Users.FindAsync(id);
 
-            var passwordCount = _db.Entry(myUser)
-                .Collection(user => user.Passwords)
-                .Query()
-                .Count();
+            if (user == null)
+            {
+                return BadRequest("User does not exits");
+            }
 
-            await _db.Entry(myUser)
+            await _db.Entry(user)
                 .Collection(u => u.Passwords)
                 .LoadAsync();
 
-            foreach (var p in myUser.Passwords)
+            var passwords = new List<UserPasswordsDto>();
+
+            foreach (var pass in user.Passwords)
             {
-                Console.WriteLine($"{p.DomainName} = {p.PasswordHash}");
+                var decryptedPassword = _protector.DecryptData(
+                    pass.PasswordHash, MySecretPassword, pass.PasswordSalt);
+                passwords.Add(PasswordsToDto(pass.DomainName, decryptedPassword));
             }
 
-            Console.WriteLine(passwordCount);
-            return Ok();
+            return Ok(passwords);
         }
 
         [HttpPost("create-passwords")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreatePasswords(string id,
+        public async Task<ActionResult<UserPassword>> CreatePasswords(string id,
             [FromBody] Dictionary<string, string> providedPasswords)
         {
             if (!ModelState.IsValid)
@@ -149,10 +154,10 @@ namespace PassLocker.Controllers
             await _db.Entry(user)
                 .Collection(u => u.Passwords)
                 .LoadAsync();
-            
+
             // list to store any to-be-updated passwords
             var passwordsToUpdate = new List<UserPassword>();
-            
+
             // finding and storing any to-be-updated passwords in `passwordsToUpdate` list
             foreach (var sp in user.Passwords)
             {
@@ -198,14 +203,17 @@ namespace PassLocker.Controllers
             {
                 return NoContent();
             }
+
             return Problem("Problem at the server. Cannot create password.");
         }
+
+        
 
         private UserPassword CreateUserPassword(string userId,
             string domain, string domainPassword, string salt, string passwordId = null)
         {
             var encryptedPassword = _protector.EncryptData(
-                domainPassword, "MySecretPassword", salt);
+                domainPassword, MySecretPassword, salt);
 
             var userPassword = new UserPassword()
             {
@@ -228,5 +236,12 @@ namespace PassLocker.Controllers
 
             return userPassword;
         }
+
+        private UserPasswordsDto PasswordsToDto(string domain, string password)
+            => new UserPasswordsDto()
+            {
+                Domain = domain,
+                Password = password
+            };
     }
 }

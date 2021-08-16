@@ -1,7 +1,8 @@
 namespace PassLocker.Dto
 {
-    public class ShowPasswordsDto
+    public class UserPasswordsDto
     {
-        
+        public string Domain;
+        public string Password;
     }
 }
