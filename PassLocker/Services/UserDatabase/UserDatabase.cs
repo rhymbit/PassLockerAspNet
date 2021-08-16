@@ -8,30 +8,30 @@ namespace PassLocker.Services.UserDatabase
 {
     public class UserDatabase : IUserDatabase
     {
-        private PassLockerDbContext db;
+        private readonly PassLockerDbContext _db;
         
-        public UserDatabase(PassLockerDbContext injectContext)
+        public UserDatabase(PassLockerDbContext dbContext)
         {
-            db = injectContext;
+            _db = dbContext;
         }
 
-        public async Task<bool> CheckIfUserExists(string email)
+        public bool CheckIfUserExists(string email)
         {
-            return db.Users.Any(user => user.UserEmail == email);
+            return _db.Users.Any(user => user.UserEmail.Equals(email));
         }
 
-        public async Task<UserViewDto> GetGoogleUser(string email)
+        public UserViewDto GetGoogleUser(string email)
         {
             try
             {
-                var googleUser = db.Users.Single(user => user.UserEmail == email);
+                var googleUser = _db.Users.Single(user => user.UserEmail == email);
                 return GoogleUserDto(googleUser);
             }
-            catch (ArgumentNullException exp)
+            catch (ArgumentNullException)
             {
                 return NewGoogleUserDto();
             }
-            catch (InvalidOperationException exp)
+            catch (InvalidOperationException)
             {
                 return NewGoogleUserDto();
             }
@@ -39,7 +39,7 @@ namespace PassLocker.Services.UserDatabase
         
         // When user exists in the database
         private static UserViewDto GoogleUserDto(User user) =>
-            new UserViewDto()
+            new()
             {
                 UserId = user.UserId,
                 UserEmail = user.UserEmail,
@@ -54,7 +54,7 @@ namespace PassLocker.Services.UserDatabase
         // When user doesn't exists in the database, an empty user is sent to frontend
         // with `UserId = 0`
         private static UserViewDto NewGoogleUserDto() =>
-            new UserViewDto()
+            new()
             {
                 UserId = "",
                 UserEmail = "",

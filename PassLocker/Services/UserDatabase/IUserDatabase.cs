@@ -5,7 +5,7 @@ namespace PassLocker.Services.UserDatabase
 {
     public interface IUserDatabase
     {
-        Task<bool> CheckIfUserExists(string email);
-        public Task<UserViewDto> GetGoogleUser(string email);
+        bool CheckIfUserExists(string email);
+        public UserViewDto GetGoogleUser(string email);
     }
 }

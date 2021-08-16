@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PassLocker.Dto;
 using PassLocker.Services.Protector;
 using PassLocker.Services.Token;
@@ -18,37 +17,26 @@ namespace PassLocker.Controllers
         private readonly PassLockerDbContext _db;
         private readonly ITokenService _tokenService;
         private readonly IProtector _protector;
+        private IConfiguration Configuration { get; }
         
-        private const string MySecretPassword = "MySecretPassword";
+        private string MySecretPassword { get; }
 
-        public PasswordController(PassLockerDbContext dbContext, ITokenService tokenService, IProtector protector)
+        public PasswordController(PassLockerDbContext dbContext, ITokenService tokenService, IProtector protector,
+            IConfiguration configuration)
         {
-            this._db = dbContext;
-            this._tokenService = tokenService;
-            this._protector = protector;
+            _db = dbContext;
+            _tokenService = tokenService;
+            _protector = protector;
+            Configuration = configuration;
+
+            MySecretPassword = Configuration["SECRET_ENCRYPTION_PASSWORD"]; // remove this later
         }
-
-        // Remove this method from production
-        // GET: api/password/test-token/{id}
-        [HttpGet("test-token")]
-        [ProducesResponseType(200, Type = typeof(string))]
-        public async Task<IActionResult> GetTestToken(string id)
-        {
-            var user = await _db.Users.FindAsync(id);
-            if (user == null)
-            {
-                return BadRequest("User doesn't exist");
-            }
-
-            var token = _tokenService.CreateToken(user.UserName, user.UserPasswordHash);
-
-            return Ok(token);
-        }
-
-        // GET: api/password/{id}
+        
+        // POST: api/password/{id}/verify-token
         [HttpPost("verify-token")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> VerifyToken(string id, [FromBody] Tokens token)
         {
             if (!ModelState.IsValid)
@@ -59,7 +47,7 @@ namespace PassLocker.Controllers
             var user = await _db.Users.FindAsync(id);
             if (user == null)
             {
-                return BadRequest("Invalid user's id. No such user exists");
+                return NotFound("Invalid user's id. No such user exists");
             }
 
             var isValid = _tokenService.ValidateToken(token.PasswordToken, user.UserSecretHash);
@@ -70,11 +58,13 @@ namespace PassLocker.Controllers
 
             return NoContent();
         }
-
+        
+        // POST: api/password/{id}/verify-user
         [HttpPost("verify-user")]
         [ProducesResponseType(200, Type = typeof(string))]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<string>> VerifyUser(string id, [FromBody] VerifyUserDto credentials)
         {
             if (!ModelState.IsValid)
@@ -85,7 +75,7 @@ namespace PassLocker.Controllers
             var user = await _db.Users.FindAsync(id);
             if (user == null)
             {
-                return BadRequest("User doesn't exist.");
+                return NotFound("User doesn't exist.");
             }
 
             var isPasswordValid = _protector.VerifyHashing(
@@ -106,37 +96,37 @@ namespace PassLocker.Controllers
 
             return Ok(token);
         }
-
+        
+        // This method/endpoint should not be exposed to client
+        // POST: api/password/{id}/get-passwords
         [HttpGet("get-passwords")]
-        public async Task<ActionResult<List<UserPasswordsDto>>> GetPasswords(string id)
+        [ProducesResponseType(200, Type=typeof(List<Dictionary<string,string>>))]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<List<Dictionary<string,string>>>> GetPasswords(string id)
         {
             var user = await _db.Users.FindAsync(id);
 
             if (user == null)
             {
-                return BadRequest("User does not exits");
+                return NotFound("User does not exits");
             }
 
             await _db.Entry(user)
                 .Collection(u => u.Passwords)
                 .LoadAsync();
 
-            var passwords = new List<UserPasswordsDto>();
+            var passwordsDto = GetPasswords(user);
 
-            foreach (var pass in user.Passwords)
-            {
-                var decryptedPassword = _protector.DecryptData(
-                    pass.PasswordHash, MySecretPassword, pass.PasswordSalt);
-                passwords.Add(PasswordsToDto(pass.DomainName, decryptedPassword));
-            }
-
-            return Ok(passwords);
+            return Ok(passwordsDto);
         }
 
+        // This method is also used for updating the passwords
+        // POST: api/password/{id}/create-passwords
         [HttpPost("create-passwords")]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200, Type=typeof(List<Dictionary<string,string>>))]
         [ProducesResponseType(400)]
-        public async Task<ActionResult<UserPassword>> CreatePasswords(string id,
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<List<Dictionary<string,string>>>> CreatePasswords(string id,
             [FromBody] Dictionary<string, string> providedPasswords)
         {
             if (!ModelState.IsValid)
@@ -147,7 +137,7 @@ namespace PassLocker.Controllers
             var user = await _db.Users.FindAsync(id);
             if (user == null)
             {
-                return BadRequest("User dose not exist.");
+                return NotFound("User dose not exist.");
             }
 
             // explicitly loading all passwords
@@ -169,12 +159,14 @@ namespace PassLocker.Controllers
                     {
                         popOff = pp.Key;
                         var updatedPassword = CreateUserPassword(user.UserId,
-                            sp.DomainName, pp.Value, sp.PasswordSalt, sp.UserPasswordId);
+                            sp.DomainName, pp.Value, sp.PasswordSalt);
                         passwordsToUpdate.Add(updatedPassword);
 
-                        // removing the old entry
-                        _db.UserPasswords.Remove(sp);
                     }
+                    // removing the old password, because
+                    // 1. either user has updated the password ( `if` condition above )
+                    // 2. or user has deleted the password at the frontend
+                    _db.UserPasswords.Remove(sp);
                 }
 
                 // pop-off the updated value from `providedPassword`
@@ -199,16 +191,16 @@ namespace PassLocker.Controllers
             }
 
             var affected = await _db.SaveChangesAsync();
-            if (affected > 0)
+
+            if (affected == 0)
             {
-                return NoContent();
+                return NoContent(); // no passwords were created or updated
             }
-
-            return Problem("Problem at the server. Cannot create password.");
+            // else send out the passwords
+            var passwordsDto = GetPasswords(user);
+            return Ok(passwordsDto);
         }
-
         
-
         private UserPassword CreateUserPassword(string userId,
             string domain, string domainPassword, string salt, string passwordId = null)
         {
@@ -237,11 +229,18 @@ namespace PassLocker.Controllers
             return userPassword;
         }
 
-        private UserPasswordsDto PasswordsToDto(string domain, string password)
-            => new UserPasswordsDto()
+        private List<KeyValuePair<string, string>> GetPasswords(User user)
+        {
+            var passwords = new Dictionary<string,string>();
+
+            foreach (var pass in user.Passwords)
             {
-                Domain = domain,
-                Password = password
-            };
+                var decryptedPassword = _protector.DecryptData(
+                    pass.PasswordHash, MySecretPassword, pass.PasswordSalt);
+                passwords.Add(pass.DomainName , decryptedPassword);
+            }
+
+            return passwords.ToList();
+        }
     }
 }

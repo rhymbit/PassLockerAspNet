@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,27 +14,22 @@ namespace PassLocker.Controllers
     [Route("api/[Controller]")]
     public class UserController : ControllerBase
     {
-        private PassLockerDbContext db;
-        private readonly IProtector protector;
+        private readonly PassLockerDbContext _db;
+        private readonly IProtector _protector;
 
         public UserController(PassLockerDbContext dbContext, IProtector protector)
         {
-            this.db = dbContext;
-            this.protector = protector;
+            _db = dbContext;
+            _protector = protector;
         }
 
-        // GET: api/user
+        // GET: api/user/all-users
         [HttpGet("all-users")]
         [ProducesResponseType(404)]
         public async Task<ActionResult<UserViewDto>> Get()
         {
-            List<User> _users = await db.Users.ToListAsync();
-            var users = new List<UserViewDto>();
-            foreach (var user in _users)
-            {
-                users.Add(UserToDto(user));
-            }
-
+            var allUsers = await _db.Users.ToListAsync();
+            var users = allUsers.Select(UserToDto).ToList();
             return Ok(users);
         }
 
@@ -44,7 +40,7 @@ namespace PassLocker.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<UserViewDto>> GetUser(string id)
         {
-            User user = await db.Users.FindAsync(id);
+            User user = await _db.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound("User does not exists");
@@ -69,9 +65,9 @@ namespace PassLocker.Controllers
                 return BadRequest(ModelState);
             }
 
-            var (hashedPassword, passwordSalt) = protector.CreateHashedStringAndSalt(
+            var (hashedPassword, passwordSalt) = _protector.CreateHashedStringAndSalt(
                 user.Password);
-            var (hashedSecret, secretSalt) = protector.CreateHashedStringAndSalt(
+            var (hashedSecret, secretSalt) = _protector.CreateHashedStringAndSalt(
                 user.Secret);
 
             user.Password = hashedPassword;
@@ -79,8 +75,8 @@ namespace PassLocker.Controllers
 
             var newUser = GoogleUserToDatabaseDto(user, passwordSalt, secretSalt);
 
-            await db.Users.AddAsync(newUser);
-            int affected = await db.SaveChangesAsync();
+            await _db.Users.AddAsync(newUser);
+            int affected = await _db.SaveChangesAsync();
             if (affected == 1)
             {
                 return Created(nameof(GetUser), UserToDto(newUser));
@@ -109,10 +105,10 @@ namespace PassLocker.Controllers
 
             // protector.CreateHashedStringAndSalt(user.UserPassword);
 
-            User new_user = UserToDatabaseDto(user);
+            User newUser = UserToDatabaseDto(user);
 
-            db.Users.Update(new_user);
-            int affected = await db.SaveChangesAsync();
+            _db.Users.Update(newUser);
+            int affected = await _db.SaveChangesAsync();
             if (affected == 1)
             {
                 return NoContent();
@@ -120,28 +116,25 @@ namespace PassLocker.Controllers
             return NotFound("User could not be found in database");
         }
 
-        [HttpDelete("{id}/delete-profile")]
+        [HttpDelete("{id}/delete-user")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            User user = await db.Users.FindAsync(id);
+            User user = await _db.Users.FindAsync(id);
             if (user == null)
             {
                 return BadRequest("User does not exists");
             }
 
-            db.Users.Remove(user);
-            int affected = await db.SaveChangesAsync();
+            _db.Users.Remove(user);
+            var affected = await _db.SaveChangesAsync();
             if (affected == 1)
             {
                 return NoContent();
             }
-            else
-            {
-                return NotFound("User could not be found in database");
-            }
+            return NotFound("User could not be found in database");
         }
 
         private static UserViewDto UserToDto(User user) =>
@@ -193,7 +186,7 @@ namespace PassLocker.Controllers
             };
             
             // creating a unique uuid for user
-            var uuid = protector.GetUuid();
+            var uuid = _protector.GetUuid();
             newUser.UserId = uuid;
 
             return newUser;

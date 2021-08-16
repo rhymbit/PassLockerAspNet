@@ -5,8 +5,14 @@
   "GoogleAuth": {
     "ClientId" : "511938303606-cgsinc6m12udh4mtj5bdmva3l4at3i7v.apps.googleusercontent.com"
   },
+  "TokenConfig": {
+    "Issuer": "https://localhost:5001",
+    "Audience": "http://localhost:3001",
+    "ExpirationTime": 60
+  },
   "ReactConfig": {
     "localhostUrl1": "http://localhost:3000",
     "localhostUrl2": "https://localhost:3000"
-  }
+  },
+  "SECRET_ENCRYPTION_PASSWORD" : "MySecretPassword"
 }

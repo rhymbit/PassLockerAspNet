@@ -27,7 +27,7 @@ namespace PassLocker.Controllers
             if (payload == null) return BadRequest("Google user not verified.");
             
             // Get user from the database or get a new user
-            UserViewDto googleUser = await _database.GetGoogleUser(payload.Email);
+            UserViewDto googleUser = _database.GetGoogleUser(payload.Email);
             googleUser.Name = payload.Name;
             googleUser.UserEmail = payload.Email;
 

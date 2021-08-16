@@ -3,15 +3,27 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace PassLocker.Services.Token
 {
     public class TokenService : ITokenService
     {
-        private const string Issuer = "https://localhost:5001";
-        private const string Audience = "http://localhost:3000";
-        private const int ExpirationTime = 60;
+        private string Issuer { get; }
+        private string Audience { get; }
+        private int ExpirationTime { get; }
+        
+        private IConfiguration Configuration { get; }
+
+        public TokenService(IConfiguration configuration)
+        {
+            Configuration = configuration;
+            Issuer = Configuration["TokenConfig:Issuer"];
+            Audience = Configuration["TokenConfig:Audience"];
+            ExpirationTime = Convert.ToInt16(
+                Configuration["TokenConfig:ExpirationTime"]);
+        }
 
         /// <summary>
         /// Generates a json web token.
@@ -65,15 +77,14 @@ namespace PassLocker.Services.Token
                 LifetimeValidator = LifeTimeValidator,
                 IssuerSigningKey = securityKey
             };
-            SecurityToken securityToken;
             try
             {
                 Thread.CurrentPrincipal = handler.ValidateToken(token,
-                    parameters, out securityToken);
+                    parameters, out _);
             }
             // basically if any exception is thrown, then token is invalid,
             // so we don't care about a specific exception here
-            catch (Exception exp)
+            catch (Exception)
             {
                 return false;
             }
