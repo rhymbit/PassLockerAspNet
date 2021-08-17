@@ -7,11 +7,11 @@ namespace PassLocker.Services.GoogleLogin
 {
     public class GoogleLogin : IGoogleLogin
     {
-        private IConfiguration Configs { get; }
+        private IConfiguration Configuration { get; }
 
         public GoogleLogin(IConfiguration configuration)
         {
-            Configs = configuration;
+            Configuration = configuration;
         }
 
         private readonly string[] _googleIssuer =
@@ -28,7 +28,7 @@ namespace PassLocker.Services.GoogleLogin
             {
                 payload = await GoogleJsonWebSignature.ValidateAsync(token);
 
-                if (payload != null && !payload.Audience.Equals(Configs["GoogleAuth:ClientId"]))
+                if (payload != null && !payload.Audience.Equals(Configuration["GoogleAuth:ClientId"]))
                 {
                     // Console.WriteLine("PassLocker.Services.GoogleLogin - Not a valid user.");
                     payload = null;
@@ -54,7 +54,7 @@ namespace PassLocker.Services.GoogleLogin
             }
             catch (InvalidJwtException)
             {
-                Console.WriteLine("PassLocker.Services.GoogleLogin - Invalid token from Google User.");
+                // Console.WriteLine("PassLocker.Services.GoogleLogin - Invalid token from Google User.");
                 payload = null;
             }
 

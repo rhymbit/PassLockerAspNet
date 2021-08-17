@@ -19,12 +19,14 @@ namespace PassLocker.Controllers
         }
 
         [HttpPost("google-login")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult> GoogleLogin([FromBody] string googleToken)
         {
             GoogleJsonWebSignature.Payload payload =
                 await _googleLogin.VerifyTokenAndGetPayload(googleToken);
             // Malicious User or Not an actual google user
-            if (payload == null) return BadRequest("Google user not verified.");
+            if (payload == null) return Unauthorized("Google user not verified");
             
             // Get user from the database or get a new user
             UserViewDto googleUser = _database.GetGoogleUser(payload.Email);

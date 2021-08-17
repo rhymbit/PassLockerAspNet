@@ -18,7 +18,7 @@ namespace PassLocker
     public class Startup
     {
         // policy name for react app
-        private const string MyAllowSpecificOrigins = "myReactApp";
+        private const string MyAllowSpecificOrigins = "PassLockerFE";
         
         public Startup(IConfiguration configuration)
         {
@@ -51,6 +51,7 @@ namespace PassLocker
                 .AddXmlDataContractSerializerFormatters()
                 .AddXmlSerializerFormatters()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            
 
             services.AddCors(options =>
             {

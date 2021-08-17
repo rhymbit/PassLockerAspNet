@@ -7,6 +7,8 @@
 
 <hr/>
 
+##### Update your own configurations in <a href="https://github.com/prateek332/PassLocker/blob/main/PassLocker/MyConfig.json">MyConfig.json</a> file before running the project. Also update information in <a href="https://github.com/prateek332/PassLocker/blob/main/PassLockerDatabase/PassLockerDbContext.cs">DbContext</a> class of the `PassLocker` database folder.
+
 ## API Endpoints
 
 ### 1. Login endpoints
@@ -47,6 +49,23 @@
         "location": "string"
       }
     ```
+
+#### `api/user/update-user`
+- `POST` method .Updates an existing user in the database.
+- This method requires user's basic information to be sent in the request body.
+- request body
+  - ```
+      {
+        "username": "string",
+        "password": "string",
+        "email": "string",
+        "secret": "string",
+        "name": "string",
+        "gender": "string",
+        "location": "string"
+      }
+    ```
+
 #### `api/user/{id}/delete-user`
 - `DELETE` method. Deletes the user with the provided id from the database
 

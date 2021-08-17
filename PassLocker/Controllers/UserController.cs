@@ -25,10 +25,15 @@ namespace PassLocker.Controllers
 
         // GET: api/user/all-users
         [HttpGet("all-users")]
+        [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<UserViewDto>> Get()
         {
             var allUsers = await _db.Users.ToListAsync();
+            if (allUsers.Count == 0)
+            {
+                return NoContent();
+            }
             var users = allUsers.Select(UserToDto).ToList();
             return Ok(users);
         }
@@ -52,68 +57,83 @@ namespace PassLocker.Controllers
         // POST: api/user/create-user
         [HttpPost("create-user")]
         [ProducesResponseType(201, Type = typeof(GoogleBasicUserProfile))]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> CreateUser([FromBody] GoogleBasicUserProfile user)
         {
-            if (user == null)
-            {
-                return BadRequest("Invalid request content. User's info is invalid");
-            }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            if (user == null)
+            {
+                return BadRequest("Request payload content is invalid");
+            }
+            
             var (hashedPassword, passwordSalt) = _protector.CreateHashedStringAndSalt(
                 user.Password);
             var (hashedSecret, secretSalt) = _protector.CreateHashedStringAndSalt(
                 user.Secret);
-
+            
             user.Password = hashedPassword;
             user.Secret = hashedSecret;
-
+            
+            // passing `Salt` values as a parameter, because cannot set them
+            // for a `GoogleBasicUserProfile`
             var newUser = GoogleUserToDatabaseDto(user, passwordSalt, secretSalt);
 
             await _db.Users.AddAsync(newUser);
-            int affected = await _db.SaveChangesAsync();
-            if (affected == 1)
-            {
-                return Created(nameof(GetUser), UserToDto(newUser));
-            }
-            else
-            {
-                return Problem("Some problem at the server. Cannot create new user.");
-            }
+            
+            var affected = await _db.SaveChangesAsync();
+            
+            return affected == 1 ? 
+                Created(nameof(GetUser), UserToDto(newUser)) : 
+                Problem("Problem at the server, could not delete user");
         }
 
-        [HttpPut("{id}/edit-profile")]
+        [HttpPut("{id}/update-user")]
         [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] User user)
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] GoogleBasicUserProfile userProvided)
         {
-            if (user == null || !user.UserId.Equals(id))
-            {
-                return BadRequest("Invalid request content. User's info is invalid");
-            }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            
+            var userStored = await _db.Users.FindAsync(id);
 
-            // protector.CreateHashedStringAndSalt(user.UserPassword);
+            if (userStored == null)
+            {
+                return NotFound("User does not exist");
+            }
+            
+            var (hashedPassword, passwordSalt) = _protector.CreateHashedStringAndSalt(
+                userProvided.Password);
+            var (hashedSecret, secretSalt) = _protector.CreateHashedStringAndSalt(
+                userProvided.Secret);
+            
+            // updating the stored user's information
+            userStored.UserName = userProvided.Username;
+            userStored.UserEmail = userProvided.Email;
+            userStored.UserPasswordHash = hashedPassword;
+            userStored.UserPasswordSalt = passwordSalt;
+            userStored.UserSecretHash = hashedSecret;
+            userStored.UserPasswordSalt = secretSalt;
+            userStored.Name = userProvided.Name;
+            userStored.Gender = userProvided.Gender;
+            userStored.Location = userProvided.Location;
 
-            User newUser = UserToDatabaseDto(user);
-
-            _db.Users.Update(newUser);
+            _db.Users.Update(userStored);
             int affected = await _db.SaveChangesAsync();
-            if (affected == 1)
+            if (affected == 1) // if one entry affected
             {
                 return NoContent();
             }
-            return NotFound("User could not be found in database");
+
+            return Problem("Problem at server, could not update user");
         }
 
         [HttpDelete("{id}/delete-user")]
@@ -125,7 +145,7 @@ namespace PassLocker.Controllers
             User user = await _db.Users.FindAsync(id);
             if (user == null)
             {
-                return BadRequest("User does not exists");
+                return NotFound("User does not exists");
             }
 
             _db.Users.Remove(user);
@@ -134,7 +154,7 @@ namespace PassLocker.Controllers
             {
                 return NoContent();
             }
-            return NotFound("User could not be found in database");
+            return Problem("Problem at server, could not delete user");
         }
 
         private static UserViewDto UserToDto(User user) =>
@@ -191,5 +211,6 @@ namespace PassLocker.Controllers
 
             return newUser;
         }
+        
     }
 }

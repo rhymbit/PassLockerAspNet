@@ -14,5 +14,5 @@
     "localhostUrl1": "http://localhost:3000",
     "localhostUrl2": "https://localhost:3000"
   },
-  "SECRET_ENCRYPTION_PASSWORD" : "MySecretPassword"
+  "ENCRYPTION_PASSWORD" : "MySecretPassword"
 }
