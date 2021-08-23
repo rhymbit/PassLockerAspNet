@@ -16,8 +16,7 @@ namespace PassLockerDatabase
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlServer(
-                Environment.GetEnvironmentVariable("DB_SQL_SERVER_EXPRESS") ??
-                BackupConnectionString());
+                Environment.GetEnvironmentVariable("DB_SQL_SERVER_PRODUCTION") ?? string.Empty);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -121,21 +120,6 @@ namespace PassLockerDatabase
                 .WithMany(u => u.Passwords)
                 .OnDelete(DeleteBehavior.Cascade);
 
-        }
-        
-        /// <summary>
-        /// This method is for development and testing purpose only.
-        /// Remove this method in production
-        /// </summary>
-        /// <returns>Sql connection string for the current OS.</returns>
-        private static string BackupConnectionString()
-        {
-            if (Environment.OSVersion.ToString().Contains("Unix", StringComparison.OrdinalIgnoreCase))
-            {
-                return "Data Source=acc;Initial Catalog=PassLocker;User id=sa;Password=Prateek332@#;";
-            }
-
-            return @"Server=PRATEEKPC\SQLEXPRESS;Database=PassLocker;Trusted_Connection=True;";
         }
     }
 }

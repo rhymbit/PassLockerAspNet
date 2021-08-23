@@ -42,7 +42,7 @@ namespace PassLockerDatabase.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("15/08/2021")
+                        .HasDefaultValue("23/08/2021")
                         .HasColumnName("member_since");
 
                     b.Property<string>("Name")

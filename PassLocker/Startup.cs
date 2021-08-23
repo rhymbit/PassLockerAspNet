@@ -1,6 +1,6 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,8 +18,8 @@ namespace PassLocker
     public class Startup
     {
         // policy name for react app
-        private const string MyAllowSpecificOrigins = "PassLockerFE";
-        
+        private const string MyAllowSpecificOrigins = "PassLocker";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,19 +31,17 @@ namespace PassLocker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<PassLockerDbContext>(options =>
-                options.UseSqlServer(
-                    Environment.GetEnvironmentVariable("DB_SQL_SERVER_EXPRESS") ?? 
-                    BackupConnectionString()));
+                options.UseSqlServer(Configuration["ENV:Database"] ?? string.Empty));
 
             // Register custom Password Hashing Service
             services.AddScoped<IProtector, Protector>();
-            
+
             // Register custom Google Authentication service
             services.AddScoped<IGoogleLogin, GoogleLogin>();
 
             // Register custom UserDatabase service
             services.AddScoped<IUserDatabase, UserDatabase>();
-            
+
             // Register custom token service
             services.AddScoped<ITokenService, TokenService>();
 
@@ -51,7 +49,7 @@ namespace PassLocker
                 .AddXmlDataContractSerializerFormatters()
                 .AddXmlSerializerFormatters()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            
+
 
             services.AddCors(options =>
             {
@@ -67,7 +65,7 @@ namespace PassLocker
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PassLocker", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "PassLocker", Version = "v1"});
             });
         }
 
@@ -81,35 +79,26 @@ namespace PassLocker
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PassLocker v1"));
             }
 
+            // app.UseForwardedHeaders(new ForwardedHeadersOptions
+            // {
+            //     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+            // });
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseCors(MyAllowSpecificOrigins);
 
+
             // app.UseAuthorization();
             // app.UseAuthentication();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 //endpoints.MapFallbackToFile("index.html");
             });
-        }
-        
-        /// <summary>
-        /// This method is for development and testing purpose only.
-        /// Remove this method in production
-        /// </summary>
-        /// <returns>Sql connection string for the current OS.</returns>
-        private string BackupConnectionString()
-        {
-            if (Environment.OSVersion.ToString().Contains("Unix", StringComparison.OrdinalIgnoreCase))
-            {
-                return "Data Source=acc;Initial Catalog=PassLocker;User id=sa;Password=Prateek332@#;";
-            }
-
-            return @"Server=PRATEEKPC\SQLEXPRESS;Database=PassLocker;Trusted_Connection=True;";
         }
     }
 }

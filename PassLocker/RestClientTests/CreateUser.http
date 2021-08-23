@@ -1,0 +1,13 @@
+POST http://localhost:5000/api/user/create-user
+Content-Type: application/json
+Content-Length: 200
+
+{
+  "username": "accelerator",
+  "password": "VeryStrongPassword12@#",
+  "email": "acc123@gmail.com",
+  "secret": "java-sucks",
+  "name": "Accelerator",
+  "gender": "male",
+  "location": "3rdPlanet"
+}

@@ -1,13 +1,13 @@
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=_CHANGE_ME;Trusted_Connection=True;MultipleActiveResultSets=true"
+  "ENV": {
+    "Database": "DB_SQL_SERVER_EXPRESS"
   },
   "GoogleAuth": {
     "ClientId" : "511938303606-cgsinc6m12udh4mtj5bdmva3l4at3i7v.apps.googleusercontent.com"
   },
   "TokenConfig": {
     "Issuer": "https://localhost:5001",
-    "Audience": "http://localhost:3001",
+    "Audience": "http://localhost:3000",
     "ExpirationTime": 60
   },
   "ReactConfig": {

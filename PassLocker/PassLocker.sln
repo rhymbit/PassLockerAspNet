@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassLocker", "PassLocker.csproj", "{937D6FB9-CA6D-4FEE-B288-21158D147A91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingConsole", "..\TestingConsole\TestingConsole.csproj", "{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassLockerDatabase", "..\PassLockerDatabase\PassLockerDatabase.csproj", "{04C9E8A3-B2FD-4BA8-8C8B-B6403D86F617}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{937D6FB9-CA6D-4FEE-B288-21158D147A91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{937D6FB9-CA6D-4FEE-B288-21158D147A91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{937D6FB9-CA6D-4FEE-B288-21158D147A91}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EADFAB0-62AD-4D61-9CB5-86ABFD3DB6D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{04C9E8A3-B2FD-4BA8-8C8B-B6403D86F617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{04C9E8A3-B2FD-4BA8-8C8B-B6403D86F617}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04C9E8A3-B2FD-4BA8-8C8B-B6403D86F617}.Release|Any CPU.ActiveCfg = Release|Any CPU

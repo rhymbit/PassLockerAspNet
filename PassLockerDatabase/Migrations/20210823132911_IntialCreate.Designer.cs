@@ -9,8 +9,8 @@ using PassLockerDatabase;
 namespace PassLockerDatabase.Migrations
 {
     [DbContext(typeof(PassLockerDbContext))]
-    [Migration("20210815160929_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210823132911_IntialCreate")]
+    partial class IntialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -44,7 +44,7 @@ namespace PassLockerDatabase.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("15/08/2021")
+                        .HasDefaultValue("23/08/2021")
                         .HasColumnName("member_since");
 
                     b.Property<string>("Name")
