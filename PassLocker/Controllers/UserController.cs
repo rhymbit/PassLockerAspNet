@@ -93,7 +93,7 @@ namespace PassLocker.Controllers
         }
 
         [HttpPut("{id}/update-user")]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] GoogleBasicUserProfile userProvided)
@@ -130,14 +130,14 @@ namespace PassLocker.Controllers
             int affected = await _db.SaveChangesAsync();
             if (affected == 1) // if one entry affected
             {
-                return NoContent();
+                return Ok("User Updated");
             }
 
             return Problem("Problem at server, could not update user");
         }
 
         [HttpDelete("{id}/delete-user")]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteUser(string id)
@@ -152,7 +152,7 @@ namespace PassLocker.Controllers
             var affected = await _db.SaveChangesAsync();
             if (affected == 1)
             {
-                return NoContent();
+                return Ok("User Deleted");
             }
             return Problem("Problem at server, could not delete user");
         }

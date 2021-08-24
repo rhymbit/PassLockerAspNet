@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace PassLocker.Controllers
 
         // POST: api/password/{id}/verify-token
         [HttpPost("verify-token")]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
@@ -57,7 +58,7 @@ namespace PassLocker.Controllers
                 return Unauthorized("Invalid or expired token");
             }
 
-            return NoContent();
+            return Ok("Token Valid");
         }
 
         // POST: api/password/{id}/verify-user
