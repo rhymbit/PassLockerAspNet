@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using PassLocker.Dto;
@@ -102,9 +104,9 @@ namespace PassLocker.Controllers
         // This method/endpoint should not be exposed to client
         // POST: api/password/{id}/get-passwords
         [HttpGet("get-passwords")]
-        [ProducesResponseType(200, Type = typeof(List<Dictionary<string, string>>))]
+        [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<List<Dictionary<string, string>>>> GetPasswords(string id)
+        public async Task<ActionResult<Dictionary<string,string>>> GetPasswords(string id)
         {
             var user = await _db.Users.FindAsync(id);
 
@@ -119,42 +121,44 @@ namespace PassLocker.Controllers
 
             var passwordsDto = GetPasswords(user);
 
-            return Ok(passwordsDto);
+            return Ok(passwordsDto.ToDictionary(
+                pass => pass.Domain, 
+                pass => pass.Password));
         }
 
 
         // POST: api/password/{id}/create-passwords
         [HttpPost("create-passwords")]
-        [ProducesResponseType(200, Type = typeof(List<Dictionary<string, string>>))]
+        [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<List<Dictionary<string, string>>>> CreatePasswords(string id,
+        public async Task<ActionResult<Dictionary<string,string>>> CreatePasswords(string id,
             [FromBody] Dictionary<string, string> providedPasswords)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+        
             var user = await _db.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound("User does not exist");
             }
-
+        
             // explicitly loading all passwords
             await _db.Entry(user)
                 .Collection(u => u.Passwords)
                 .LoadAsync();
-
+        
             // list to store any to-be-updated passwords
             var passwordsToUpdate = new List<UserPassword>();
-
+        
             // finding and storing any to-be-updated passwords in `passwordsToUpdate` list
             foreach (var sp in user.Passwords)
             {
                 string popOff = null;
-
+        
                 foreach (var pp in providedPasswords)
                 {
                     if (sp.DomainName.Equals(pp.Key))
@@ -164,13 +168,13 @@ namespace PassLocker.Controllers
                             sp.DomainName, pp.Value, sp.PasswordSalt);
                         passwordsToUpdate.Add(updatedPassword);
                     }
-
+        
                     // removing the old password, because
                     // 1. either user has updated the password ( `if` condition above )
                     // 2. or user has deleted the password at the frontend
                     _db.UserPasswords.Remove(sp);
                 }
-
+        
                 // pop-off the updated value from `providedPassword`
                 // so later a new password value is not generated for this entry
                 if (popOff != null)
@@ -178,30 +182,32 @@ namespace PassLocker.Controllers
                     providedPasswords.Remove(popOff);
                 }
             }
-
+        
             // update password if any needs to be updated
             if (passwordsToUpdate.Count > 0)
             {
                 await _db.UserPasswords.AddRangeAsync(passwordsToUpdate);
             }
-
+        
             // create a new entry for new values in `providedPasswords`
             foreach (var password in providedPasswords)
             {
                 var userPassword = CreateUserPassword(id, password.Key, password.Value, user.UserPasswordSalt);
                 await _db.UserPasswords.AddAsync(userPassword);
             }
-
+        
             var affected = await _db.SaveChangesAsync();
-
+        
             if (affected == 0)
             {
                 return NoContent(); // no passwords were created or updated
             }
-
+        
             // else send out the passwords
             var passwordsDto = GetPasswords(user);
-            return Ok(passwordsDto);
+            return Ok(passwordsDto.ToDictionary(
+                pass => pass.Domain, 
+                pass => pass.Password));
         }
 
         private UserPassword CreateUserPassword(string userId,
@@ -232,18 +238,14 @@ namespace PassLocker.Controllers
             return userPassword;
         }
 
-        private List<KeyValuePair<string, string>> GetPasswords(User user)
+        private IEnumerable<UserPasswordsDto> GetPasswords(User user)
         {
-            var passwords = new Dictionary<string, string>();
-
-            foreach (var pass in user.Passwords)
+            var passwordsDto = user.Passwords.Select(pass => new UserPasswordsDto
             {
-                var decryptedPassword = _protector.DecryptData(
-                    pass.PasswordHash, MySecretPassword, pass.PasswordSalt);
-                passwords.Add(pass.DomainName, decryptedPassword);
-            }
-
-            return passwords.ToList();
+                Domain = pass.DomainName,
+                Password = _protector.DecryptData(pass.PasswordHash, MySecretPassword, pass.PasswordSalt)
+            }).ToArray();
+            return passwordsDto;
         }
     }
 }
