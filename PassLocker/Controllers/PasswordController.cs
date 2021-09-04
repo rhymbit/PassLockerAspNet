@@ -106,7 +106,7 @@ namespace PassLocker.Controllers
         [HttpGet("get-passwords")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Dictionary<string,string>>> GetPasswords(string id, [FromBody] Tokens token)
+        public async Task<ActionResult<Dictionary<string,string>>> GetPasswords(string id, [FromQuery] string token)
         {
             var user = await _db.Users.FindAsync(id);
             if (user == null)
@@ -114,7 +114,7 @@ namespace PassLocker.Controllers
                 return NotFound("User does not exits");
             }
 
-            var isTokenValid = _tokenService.ValidateToken(token.PasswordToken, user.UserSecretHash);
+            var isTokenValid = _tokenService.ValidateToken(token, user.UserSecretHash);
             if (!isTokenValid)
             {
                 return Unauthorized("Invalid or expired token");
