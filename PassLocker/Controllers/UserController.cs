@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PassLocker.Dto;
 using PassLocker.Services.Protector;
+using PassLocker.Services.Token;
 using PassLockerDatabase;
 
 namespace PassLocker.Controllers
@@ -16,11 +17,13 @@ namespace PassLocker.Controllers
     {
         private readonly PassLockerDbContext _db;
         private readonly IProtector _protector;
+        private readonly ITokenService _tokenService;
 
-        public UserController(PassLockerDbContext dbContext, IProtector protector)
+        public UserController(PassLockerDbContext dbContext, IProtector protector, ITokenService tokenService)
         {
             _db = dbContext;
             _protector = protector;
+            _tokenService = tokenService;
         }
 
         // GET: api/user/all-users
@@ -96,7 +99,8 @@ namespace PassLocker.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] GoogleBasicUserProfile userProvided)
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] GoogleBasicUserProfile userProvided,
+            [FromQuery] string token)
         {
             if (!ModelState.IsValid)
             {
@@ -104,10 +108,15 @@ namespace PassLocker.Controllers
             }
             
             var userStored = await _db.Users.FindAsync(id);
-
             if (userStored == null)
             {
                 return NotFound("User does not exist");
+            }
+
+            var isTokenValid = _tokenService.ValidateToken(token, userStored.UserSecretHash);
+            if (!isTokenValid)
+            {
+                return Unauthorized("User is not verified");
             }
             
             var (hashedPassword, passwordSalt) = _protector.CreateHashedStringAndSalt(
@@ -140,12 +149,18 @@ namespace PassLocker.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<IActionResult> DeleteUser(string id, [FromBody] Tokens token)
         {
             User user = await _db.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound("User does not exists");
+            }
+            
+            var isTokenValid = _tokenService.ValidateToken(token.UserToken, user.UserSecretHash);
+            if (!isTokenValid)
+            {
+                return Unauthorized("User is not verified");
             }
 
             _db.Users.Remove(user);

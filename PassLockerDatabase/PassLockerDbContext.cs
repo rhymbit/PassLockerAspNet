@@ -16,7 +16,7 @@ namespace PassLockerDatabase
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlServer(
-                Environment.GetEnvironmentVariable("DB_SQL_SERVER_PRODUCTION") ?? string.Empty);
+                Environment.GetEnvironmentVariable("DB_SQL_SERVER_EXPRESS") ?? string.Empty);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -29,7 +29,7 @@ namespace PassLocker.Services.Token
         /// Generates a json web token.
         /// </summary>
         /// <param name="username">Current user's username. Fetch if from database and pass it to this method.</param>
-        /// <param name="sec">Fetch user's password's hash value and pass it as this argument.</param>
+        /// <param name="sec">Fetch user's password or secret hash value and pass it as this argument.</param>
         /// <returns>String value of the generated jwt.</returns>
         public string CreateToken(string username, string sec)
         {

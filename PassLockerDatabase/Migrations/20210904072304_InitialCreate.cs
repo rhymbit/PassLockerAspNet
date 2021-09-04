@@ -2,7 +2,7 @@
 
 namespace PassLockerDatabase.Migrations
 {
-    public partial class IntialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -21,7 +21,7 @@ namespace PassLockerDatabase.Migrations
                     name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     location = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     gender = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    member_since = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "23/08/2021")
+                    member_since = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "04/09/2021")
                 },
                 constraints: table =>
                 {

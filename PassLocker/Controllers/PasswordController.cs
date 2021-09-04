@@ -106,13 +106,18 @@ namespace PassLocker.Controllers
         [HttpGet("get-passwords")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Dictionary<string,string>>> GetPasswords(string id)
+        public async Task<ActionResult<Dictionary<string,string>>> GetPasswords(string id, [FromBody] Tokens token)
         {
             var user = await _db.Users.FindAsync(id);
-
             if (user == null)
             {
                 return NotFound("User does not exits");
+            }
+
+            var isTokenValid = _tokenService.ValidateToken(token.PasswordToken, user.UserSecretHash);
+            if (!isTokenValid)
+            {
+                return Unauthorized("Invalid or expired token");
             }
 
             await _db.Entry(user)
@@ -133,7 +138,7 @@ namespace PassLocker.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<Dictionary<string,string>>> CreatePasswords(string id,
-            [FromBody] Dictionary<string, string> providedPasswords)
+            [FromBody] Dictionary<string, string> providedPasswords, [FromQuery] string token)
         {
             if (!ModelState.IsValid)
             {
@@ -144,6 +149,12 @@ namespace PassLocker.Controllers
             if (user == null)
             {
                 return NotFound("User does not exist");
+            }
+            
+            var isTokenValid = _tokenService.ValidateToken(token, user.UserSecretHash);
+            if (!isTokenValid)
+            {
+                return Unauthorized("Invalid or expired token");
             }
         
             // explicitly loading all passwords
@@ -209,7 +220,9 @@ namespace PassLocker.Controllers
                 pass => pass.Domain, 
                 pass => pass.Password));
         }
-
+        
+        
+        // Utility Method
         private UserPassword CreateUserPassword(string userId,
             string domain, string domainPassword, string salt, string passwordId = null)
         {
@@ -237,7 +250,9 @@ namespace PassLocker.Controllers
 
             return userPassword;
         }
-
+        
+        
+        // Utility Method
         private IEnumerable<UserPasswordsDto> GetPasswords(User user)
         {
             var passwordsDto = user.Passwords.Select(pass => new UserPasswordsDto
