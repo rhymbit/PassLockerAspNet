@@ -149,7 +149,7 @@ namespace PassLocker.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteUser(string id, [FromBody] Tokens token)
+        public async Task<IActionResult> DeleteUser(string id, [FromQuery] string token)
         {
             User user = await _db.Users.FindAsync(id);
             if (user == null)
@@ -157,7 +157,7 @@ namespace PassLocker.Controllers
                 return NotFound("User does not exists");
             }
             
-            var isTokenValid = _tokenService.ValidateToken(token.UserToken, user.UserSecretHash);
+            var isTokenValid = _tokenService.ValidateToken(token, user.UserSecretHash);
             if (!isTokenValid)
             {
                 return Unauthorized("User is not verified");
