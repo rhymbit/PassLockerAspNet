@@ -3,7 +3,7 @@ namespace PassLocker.Dto
     public class UserViewDto
     {
         public string UserId { get; set; }
-        public string UserName { get; set; }
+        public string Username { get; set; }
         
         public string UserEmail { get; set; }
         public bool Confirmed { get; set; }

@@ -36,7 +36,7 @@ namespace PassLockerDatabase
                 .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<User>()
-                .Property(user => user.UserName)
+                .Property(user => user.Username)
                 .IsRequired()
                 .HasMaxLength(30);
 

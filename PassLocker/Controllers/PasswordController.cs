@@ -96,7 +96,7 @@ namespace PassLocker.Controllers
                 return Unauthorized("Incorrect secret answer");
             }
 
-            var token = _tokenService.CreateToken(user.UserName, user.UserSecretHash);
+            var token = _tokenService.CreateToken(user.Username, user.UserSecretHash);
 
             return Ok(token);
         }

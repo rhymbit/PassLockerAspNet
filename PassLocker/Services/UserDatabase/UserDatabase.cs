@@ -43,7 +43,7 @@ namespace PassLocker.Services.UserDatabase
             {
                 UserId = user.UserId,
                 UserEmail = user.UserEmail,
-                UserName = user.UserName,
+                Username = user.Username,
                 Confirmed = user.UserConfirmed,
                 Name = user.Name,
                 Gender = user.Gender,
@@ -58,7 +58,7 @@ namespace PassLocker.Services.UserDatabase
             {
                 UserId = "",
                 UserEmail = "",
-                UserName = "",
+                Username = "",
                 Confirmed = false,
                 Name = "",
                 Gender = "",

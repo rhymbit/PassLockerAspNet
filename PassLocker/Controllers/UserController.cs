@@ -125,7 +125,7 @@ namespace PassLocker.Controllers
                 userProvided.Secret);
             
             // updating the stored user's information
-            userStored.UserName = userProvided.Username;
+            userStored.Username = userProvided.Username;
             userStored.UserEmail = userProvided.Email;
             userStored.UserPasswordHash = hashedPassword;
             userStored.UserPasswordSalt = passwordSalt;
@@ -177,7 +177,7 @@ namespace PassLocker.Controllers
             {
                 UserId = user.UserId,
                 UserEmail = user.UserEmail,
-                UserName = user.UserName,
+                Username = user.Username,
                 Confirmed = user.UserConfirmed,
                 Name = user.Name,
                 Gender = user.Gender,
@@ -188,7 +188,7 @@ namespace PassLocker.Controllers
             new User
             {
                 UserId = user.UserId,
-                UserName = user.UserName,
+                Username = user.Username,
                 UserEmail = user.UserEmail,
                 UserPasswordSalt = user.UserPasswordSalt,
                 UserPasswordHash = user.UserPasswordHash,
@@ -207,7 +207,7 @@ namespace PassLocker.Controllers
             // creating a new user with details from front-end
             var newUser = new User
             {
-                UserName = user.Username,
+                Username = user.Username,
                 UserEmail = user.Email,
                 UserPasswordSalt = passwordSalt,
                 UserPasswordHash = user.Password,
