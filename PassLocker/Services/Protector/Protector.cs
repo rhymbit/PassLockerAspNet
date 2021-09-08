@@ -31,7 +31,6 @@ namespace PassLocker.Services.Protector
         {
             var saltBytes = Convert.FromBase64String(salt);
             var providedHashedString = SaltAndHashString(providedString, saltBytes);
-
             return string.Equals(providedHashedString, savedHashedString);
         }
 

@@ -74,11 +74,13 @@ namespace PassLocker.Controllers
                 return BadRequest("Request payload content is invalid");
             }
             
-            var (hashedPassword, passwordSalt) = _protector.CreateHashedStringAndSalt(
-                user.Password);
-            var (hashedSecret, secretSalt) = _protector.CreateHashedStringAndSalt(
-                user.Secret);
             
+            
+            var (hashedPassword, passwordSalt) = 
+                _protector.CreateHashedStringAndSalt(user.Password);
+            var (hashedSecret, secretSalt) = 
+                _protector.CreateHashedStringAndSalt(user.Secret);
+
             user.Password = hashedPassword;
             user.Secret = hashedSecret;
             
@@ -119,18 +121,18 @@ namespace PassLocker.Controllers
                 return Unauthorized("User is not verified");
             }
             
-            var (hashedPassword, passwordSalt) = _protector.CreateHashedStringAndSalt(
-                userProvided.Password);
-            var (hashedSecret, secretSalt) = _protector.CreateHashedStringAndSalt(
-                userProvided.Secret);
-            
+            var (hashedPassword, passwordSalt) = 
+                _protector.CreateHashedStringAndSalt(userProvided.Password);
+            var (hashedSecret, secretSalt) = 
+                _protector.CreateHashedStringAndSalt(userProvided.Secret);
+
             // updating the stored user's information
             userStored.Username = userProvided.Username;
             userStored.UserEmail = userProvided.Email;
-            userStored.UserPasswordHash = hashedPassword;
             userStored.UserPasswordSalt = passwordSalt;
+            userStored.UserPasswordHash = hashedPassword;
+            userStored.UserSecretSalt = secretSalt;
             userStored.UserSecretHash = hashedSecret;
-            userStored.UserPasswordSalt = secretSalt;
             userStored.Name = userProvided.Name;
             userStored.Gender = userProvided.Gender;
             userStored.Location = userProvided.Location;
