@@ -75,7 +75,6 @@ namespace PassLocker.Controllers
             }
             
             
-            
             var (hashedPassword, passwordSalt) = 
                 _protector.CreateHashedStringAndSalt(user.Password);
             var (hashedSecret, secretSalt) = 
@@ -120,7 +119,11 @@ namespace PassLocker.Controllers
             {
                 return Unauthorized("User is not verified");
             }
-            
+
+            await _db.Entry(userStored)
+                .Collection(u => u.Passwords)
+                .LoadAsync();
+
             var (hashedPassword, passwordSalt) = 
                 _protector.CreateHashedStringAndSalt(userProvided.Password);
             var (hashedSecret, secretSalt) = 
@@ -141,7 +144,7 @@ namespace PassLocker.Controllers
             int affected = await _db.SaveChangesAsync();
             if (affected == 1) // if one entry affected
             {
-                return Ok("User Updated");
+                return Ok(UserToDto(userStored));
             }
 
             return Problem("Problem at server, could not update user");
